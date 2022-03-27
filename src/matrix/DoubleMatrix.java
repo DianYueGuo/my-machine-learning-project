@@ -23,43 +23,27 @@ class DoubleCalculator implements Calculator {
 
 public class DoubleMatrix extends Matrix {
 
-	private final boolean isWrapping;
-	private final Matrix wrappedMatrix;
-
-	public DoubleMatrix(Matrix matrix) {
+	private DoubleMatrix(Matrix matrix) {
 		super(matrix.getNumberOfRows(), matrix.getNumberOfColumns());
-		isWrapping = true;
-		wrappedMatrix = matrix;
+		super.values = matrix.values;
 	}
 
 	public DoubleMatrix(int numberOfRows, int numberOfColumns) {
 		super(numberOfRows, numberOfColumns);
-		isWrapping = false;
-		wrappedMatrix = null;
 
 		// TODO Auto-generated constructor stub
 	}
 
 	public DoubleMatrix(Double values[][], int numberOfRows, int numberOfColumns) {
 		super(values, numberOfRows, numberOfColumns);
-		isWrapping = false;
-		wrappedMatrix = null;
 	}
 
 	public void set(int rowIndex, int columnIndex, double value) {
-		if (isWrapping) {
-			wrappedMatrix.set(rowIndex, columnIndex, value);
-		} else {
-			super.values[rowIndex][columnIndex] = value;
-		}
+		super.set(rowIndex, columnIndex, value);
 	}
 
 	public Double get(int rowIndex, int columnIndex) {
-		if (isWrapping) {
-			return (Double) wrappedMatrix.get(rowIndex, columnIndex);
-		} else {
-			return (Double) super.values[rowIndex][columnIndex];
-		}
+		return (Double) super.get(rowIndex, columnIndex);
 	}
 
 	public static DoubleMatrix multiply(Matrix A, Matrix B) throws MatrixMultiplicationException,

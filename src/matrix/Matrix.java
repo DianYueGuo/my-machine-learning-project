@@ -10,7 +10,7 @@ public class Matrix {
 
 	private final int numberOfRows;
 	private final int numberOfColumns;
-	protected final Object values[][];
+	protected Object values[][];
 
 	public Matrix(int numberOfRows, int numberOfColumns) {
 		this.numberOfRows = numberOfRows;
