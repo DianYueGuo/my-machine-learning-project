@@ -1,7 +1,5 @@
 package matrix;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -86,7 +84,7 @@ public class Matrix {
 			}
 		}
 
-		ExecutorService executorService = Executors.newFixedThreadPool(16);
+		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 		for (int i = 0; i < numberOfRows; i++) {
 			for (int j = 0; j < numberOfColumns; j++) {
 				DoDotProduct doDotProduct = new DoDotProduct(i, j);
