@@ -38,10 +38,12 @@ public class DoubleMatrix extends Matrix {
 		super(values, numberOfRows, numberOfColumns);
 	}
 
-	public void set(int rowIndex, int columnIndex, double value) {
-		super.set(rowIndex, columnIndex, value);
+	@Override
+	public void set(int rowIndex, int columnIndex, Object value) {
+		super.set(rowIndex, columnIndex, (Double) value);
 	}
 
+	@Override
 	public Double get(int rowIndex, int columnIndex) {
 		return (Double) super.get(rowIndex, columnIndex);
 	}

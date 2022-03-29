@@ -3,6 +3,7 @@ package matrix;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 public class Matrix {
 
@@ -97,6 +98,41 @@ public class Matrix {
 		}
 
 		return matrix;
+	}
+	
+	public void map(Function<Object, Object> function) throws InterruptedException {
+		class DoFunction implements Runnable {
+			private final Matrix matrix;
+			private final int i;
+			private final int j;
+			private final Function<Object, Object> function;
+			
+			DoFunction(Matrix matrix, int i, int j, Function<Object, Object> function) {
+				this.matrix = matrix;
+				this.i = i;
+				this.j = j;
+				this.function = function;
+			}
+			
+			@Override
+			public void run() {
+				final Object result = this.function.apply(this.matrix.get(i, j));
+				this.matrix.set(this.i, this.j, result);
+			}
+		}
+		
+		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+		for(int i = 0; i < this.numberOfRows; i++) {
+			for(int j = 0; j < this.numberOfColumns; j++) {
+				DoFunction dofunction = new DoFunction(this, i, j, function);
+				executorService.execute(dofunction);
+			}
+		}
+		executorService.shutdown();
+		while (!executorService.isTerminated()) {
+			executorService.awaitTermination(1000L, TimeUnit.MILLISECONDS);
+		}
+		
 	}
 
 	@Override
