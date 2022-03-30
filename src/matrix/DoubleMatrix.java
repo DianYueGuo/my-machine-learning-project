@@ -52,5 +52,9 @@ public class DoubleMatrix extends Matrix {
 			NumberMultiplicationException, NumberAdditionException, InterruptedException {
 		return new DoubleMatrix(multiply(A, B, new DoubleCalculator()));
 	}
+	
+	public static DoubleMatrix add(Matrix A, Matrix B) throws MatrixAdditionException, InterruptedException {
+		return new DoubleMatrix(add(A, B, new DoubleCalculator()));
+	}
 
 }

@@ -99,33 +99,45 @@ public class Matrix {
 
 		return matrix;
 	}
-	
-	public void map(Function<Object, Object> function) throws InterruptedException {
-		class DoFunction implements Runnable {
-			private final Matrix matrix;
+
+	public static Matrix add(Matrix A, Matrix B, Calculator calculator) throws MatrixAdditionException, InterruptedException {
+		final int A_numberOfRows = A.getNumberOfRows();
+		final int A_numberOfColumns = A.getNumberOfColumns();
+		final int B_numberOfRows = B.getNumberOfRows();
+		final int B_numberOfColumns = B.getNumberOfColumns();
+		if(A_numberOfRows != B_numberOfRows || A_numberOfColumns != B_numberOfColumns) {
+			throw new MatrixAdditionException();
+		}
+		
+		Matrix matrix = new Matrix(A_numberOfRows, A_numberOfColumns);
+		
+		class DoAddition implements Runnable {
 			private final int i;
 			private final int j;
-			private final Function<Object, Object> function;
-			
-			DoFunction(Matrix matrix, int i, int j, Function<Object, Object> function) {
-				this.matrix = matrix;
+
+			DoAddition(int i, int j) {
 				this.i = i;
 				this.j = j;
-				this.function = function;
 			}
-			
+
 			@Override
 			public void run() {
-				final Object result = this.function.apply(this.matrix.get(i, j));
-				this.matrix.set(this.i, this.j, result);
+				try {
+					Object result;
+					result = calculator.add(A.get(i, j), B.get(i, j));
+					matrix.set(i, j, result);
+				} catch (NumberAdditionException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 		
 		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-		for(int i = 0; i < this.numberOfRows; i++) {
-			for(int j = 0; j < this.numberOfColumns; j++) {
-				DoFunction dofunction = new DoFunction(this, i, j, function);
-				executorService.execute(dofunction);
+		for (int i = 0; i < A_numberOfRows; i++) {
+			for (int j = 0; j < B_numberOfColumns; j++) {
+				DoAddition doAddition = new DoAddition(i, j);
+				executorService.execute(doAddition);
 			}
 		}
 		executorService.shutdown();
@@ -133,6 +145,40 @@ public class Matrix {
 			executorService.awaitTermination(1000L, TimeUnit.MILLISECONDS);
 		}
 		
+		return matrix;
+	}
+
+	public void map(Function<Object, Object> function) throws InterruptedException {
+		class DoFunction implements Runnable {
+			private final Matrix matrix;
+			private final int i;
+			private final int j;
+
+			DoFunction(Matrix matrix, int i, int j) {
+				this.matrix = matrix;
+				this.i = i;
+				this.j = j;
+			}
+
+			@Override
+			public void run() {
+				final Object result = function.apply(this.matrix.get(i, j));
+				this.matrix.set(this.i, this.j, result);
+			}
+		}
+
+		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+		for (int i = 0; i < this.numberOfRows; i++) {
+			for (int j = 0; j < this.numberOfColumns; j++) {
+				DoFunction dofunction = new DoFunction(this, i, j);
+				executorService.execute(dofunction);
+			}
+		}
+		executorService.shutdown();
+		while (!executorService.isTerminated()) {
+			executorService.awaitTermination(1000L, TimeUnit.MILLISECONDS);
+		}
+
 	}
 
 	@Override
