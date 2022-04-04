@@ -2,7 +2,7 @@ package matrix;
 
 public interface Calculator {
 	
-	Object multiply(Object A, Object B) throws NumberMultiplicationException;
-	Object add(Object A, Object B) throws NumberAdditionException;
+	Object multiply(Object a, Object b) throws NumberMultiplicationException;
+	Object add(Object a, Object b) throws NumberAdditionException;
 		
 }

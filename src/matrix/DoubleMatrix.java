@@ -2,19 +2,19 @@ package matrix;
 
 class DoubleCalculator implements Calculator {
 
-	public Object multiply(Object A, Object B) throws NumberMultiplicationException {
-		if (A instanceof Double && B instanceof Double) {
+	public Object multiply(Object a, Object b) throws NumberMultiplicationException {
+		if (a instanceof Double && b instanceof Double) {
 //			System.out.println("multiply");
-			return (Double) A * (Double) B;
+			return (Double) a * (Double) b;
 		} else {
 			throw new NumberMultiplicationException();
 		}
 	}
 
-	public Object add(Object A, Object B) throws NumberAdditionException {
+	public Object add(Object a, Object b) throws NumberAdditionException {
 //		System.out.println("A: " + A.getClass().getName() + ", B: " + B.getClass().getName());
-		if (A instanceof Double && B instanceof Double) {
-			return (Double) A + (Double) B;
+		if (a instanceof Double && b instanceof Double) {
+			return (Double) a + (Double) b;
 		} else {
 			throw new NumberAdditionException();
 		}
@@ -34,7 +34,7 @@ public class DoubleMatrix extends Matrix {
 		// TODO Auto-generated constructor stub
 	}
 
-	public DoubleMatrix(Double values[][], int numberOfRows, int numberOfColumns) {
+	public DoubleMatrix(Double values[][], int numberOfRows, int numberOfColumns) throws InterruptedException {
 		super(values, numberOfRows, numberOfColumns);
 	}
 
@@ -48,13 +48,13 @@ public class DoubleMatrix extends Matrix {
 		return (Double) super.get(rowIndex, columnIndex);
 	}
 
-	public static DoubleMatrix multiply(Matrix A, Matrix B) throws MatrixMultiplicationException,
+	public static DoubleMatrix multiply(Matrix a, Matrix b) throws MatrixMultiplicationException,
 			NumberMultiplicationException, NumberAdditionException, InterruptedException {
-		return new DoubleMatrix(multiply(A, B, new DoubleCalculator()));
+		return new DoubleMatrix(multiply(a, b, new DoubleCalculator()));
 	}
 	
-	public static DoubleMatrix add(Matrix A, Matrix B) throws MatrixAdditionException, InterruptedException {
-		return new DoubleMatrix(add(A, B, new DoubleCalculator()));
+	public static DoubleMatrix add(Matrix a, Matrix b) throws MatrixAdditionException, InterruptedException {
+		return new DoubleMatrix(add(a, b, new DoubleCalculator()));
 	}
 
 }
