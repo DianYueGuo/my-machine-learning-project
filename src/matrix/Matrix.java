@@ -6,27 +6,44 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public class Matrix {
+public class Matrix<T> {
 
-	private final int numberOfRows;
-	private final int numberOfColumns;
-	protected Object values[][];
+	private int numberOfRows;
+	private int numberOfColumns;
+	private T values[][];
+	private Calculator<T> calculator;
 
-	public Matrix(int numberOfRows, int numberOfColumns) {
+	public static final Calculator<Double> DOUBLE_CALCULATOR = new Calculator<Double>() {
+
+		@Override
+		public Double multiply(Double a, Double b) {
+			return a * b;
+		}
+
+		@Override
+		public Double add(Double a, Double b) {
+			return a + b;
+		}
+	};
+
+	@SuppressWarnings("unchecked")
+	public Matrix(int numberOfRows, int numberOfColumns, Calculator<T> calculator) {
 		this.numberOfRows = numberOfRows;
 		this.numberOfColumns = numberOfColumns;
-		this.values = new Object[numberOfRows][numberOfColumns];
+		this.values = (T[][]) new Object[numberOfRows][numberOfColumns];
+		this.calculator = calculator;
 	}
 
-	public Matrix(int numberOfRows, int numberOfColumns, BiFunction<Integer, Integer, Object> biFunction) throws InterruptedException {
-		this(numberOfRows, numberOfColumns);
-		
+	public Matrix(int numberOfRows, int numberOfColumns, BiFunction<Integer, Integer, T> biFunction,
+			Calculator<T> calculator) {
+		this(numberOfRows, numberOfColumns, calculator);
+
 		class DoFunction implements Runnable {
-			private final Matrix thisMatrix;
+			private final Matrix<T> thisMatrix;
 			private final int i;
 			private final int j;
 
-			DoFunction(Matrix thisMatrix, int i, int j) {
+			DoFunction(Matrix<T> thisMatrix, int i, int j) {
 				this.thisMatrix = thisMatrix;
 				this.i = i;
 				this.j = j;
@@ -34,7 +51,7 @@ public class Matrix {
 
 			@Override
 			public void run() {
-				final Object result = biFunction.apply(i, j);
+				final T result = biFunction.apply(i, j);
 				this.thisMatrix.set(this.i, this.j, result);
 			}
 		}
@@ -48,23 +65,52 @@ public class Matrix {
 		}
 		executorService.shutdown();
 		while (!executorService.isTerminated()) {
-			executorService.awaitTermination(1000L, TimeUnit.MILLISECONDS);
+			try {
+				executorService.awaitTermination(1000L, TimeUnit.MILLISECONDS);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
-	
-	public Matrix(Object values[][], int numberOfRows, int numberOfColumns) throws InterruptedException {
-		this(numberOfRows, numberOfColumns, new BiFunction<Integer, Integer, Object>() {
+
+	public Matrix(T values[][], int numberOfRows, int numberOfColumns, Calculator<T> calculator) {
+		this(numberOfRows, numberOfColumns, new BiFunction<Integer, Integer, T>() {
 
 			@Override
-			public Object apply(Integer i, Integer j) {
+			public T apply(Integer i, Integer j) {
 				return values[i][j];
 			}
-			
-		});
+
+		}, calculator);
 	}
 
-	public static Matrix multiply(Matrix a, Matrix b, Calculator calculator) throws MatrixMultiplicationException,
-			NumberMultiplicationException, NumberAdditionException, InterruptedException {
+	public void set(int rowIndex, int columnIndex, T value) {
+		this.values[rowIndex][columnIndex] = value;
+	}
+
+	private void set(Matrix<T> matrix) {
+		this.numberOfRows = matrix.numberOfRows;
+		this.numberOfColumns = matrix.numberOfColumns;
+		this.values = matrix.values;
+		this.calculator = matrix.calculator;
+	}
+	
+	public T get(int rowIndex, int columnIndex) {
+		return this.values[rowIndex][columnIndex];
+	}
+
+	public int getNumberOfRows() {
+		return this.numberOfRows;
+	}
+
+	public int getNumberOfColumns() {
+		return this.numberOfColumns;
+	}
+
+	public Matrix<T> multiply(Matrix<T> b) throws MatrixMultiplicationException {
+		final Matrix<T> a = this;
+
 		if (a.getNumberOfColumns() != b.getNumberOfRows())
 			throw new MatrixMultiplicationException();
 
@@ -72,7 +118,7 @@ public class Matrix {
 		final int numberOfRows = a.getNumberOfRows();
 		final int numberOfColumns = b.getNumberOfColumns();
 
-		Matrix matrix = new Matrix(numberOfRows, numberOfColumns);
+		Matrix<T> matrix = new Matrix<T>(numberOfRows, numberOfColumns, calculator);
 
 		class DoDotProduct implements Runnable {
 			private final int i;
@@ -85,19 +131,16 @@ public class Matrix {
 
 			public void run() {
 				for (int k = 0; k < length; k++) {
-					try {
-						final Object aObject = a.get(i, k);
-						final Object bObject = b.get(k, j);
-						
-						Object cObject = calculator.multiply(aObject, bObject);
-						
-						if (k > 0) {
-							cObject = calculator.add(matrix.get(i, j), cObject);
-						}
+					final T aT = a.get(i, k);
+					final T bT = b.get(k, j);
 
-						matrix.set(i, j, cObject);
-					} catch (NumberMultiplicationException | NumberAdditionException e) {
+					T cT = calculator.multiply(aT, bT);
+
+					if (k > 0) {
+						cT = calculator.add(matrix.get(i, j), cT);
 					}
+
+					matrix.set(i, j, cT);
 				}
 			}
 		}
@@ -111,14 +154,22 @@ public class Matrix {
 		}
 		executorService.shutdown();
 		while (!executorService.isTerminated()) {
-			executorService.awaitTermination(1000L, TimeUnit.MILLISECONDS);
+			try {
+				executorService.awaitTermination(1000L, TimeUnit.MILLISECONDS);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
-		return matrix;
+		this.set(matrix);
+		
+		return this;
 	}
 
-	public static Matrix add(Matrix a, Matrix b, Calculator calculator)
-			throws MatrixAdditionException, InterruptedException {
+	public Matrix<T> add(Matrix<T> b) throws MatrixAdditionException {
+		final Matrix<T> a = this;
+
 		final int a_numberOfRows = a.getNumberOfRows();
 		final int a_numberOfColumns = a.getNumberOfColumns();
 		final int b_numberOfRows = b.getNumberOfRows();
@@ -127,7 +178,7 @@ public class Matrix {
 			throw new MatrixAdditionException();
 		}
 
-		Matrix matrix = new Matrix(a_numberOfRows, a_numberOfColumns);
+		Matrix<T> matrix = new Matrix<T>(a_numberOfRows, a_numberOfColumns, calculator);
 
 		class DoAddition implements Runnable {
 			private final int i;
@@ -140,14 +191,9 @@ public class Matrix {
 
 			@Override
 			public void run() {
-				try {
-					Object result;
-					result = calculator.add(a.get(i, j), b.get(i, j));
-					matrix.set(i, j, result);
-				} catch (NumberAdditionException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				T result;
+				result = calculator.add(a.get(i, j), b.get(i, j));
+				matrix.set(i, j, result);
 			}
 		}
 
@@ -160,35 +206,26 @@ public class Matrix {
 		}
 		executorService.shutdown();
 		while (!executorService.isTerminated()) {
-			executorService.awaitTermination(1000L, TimeUnit.MILLISECONDS);
+			try {
+				executorService.awaitTermination(1000L, TimeUnit.MILLISECONDS);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
-		return matrix;
+		this.set(matrix);
+		
+		return this;
 	}
 
-	public void set(int rowIndex, int columnIndex, Object value) {
-		this.values[rowIndex][columnIndex] = value;
-	}
-
-	public Object get(int rowIndex, int columnIndex) {
-		return this.values[rowIndex][columnIndex];
-	}
-
-	public int getNumberOfRows() {
-		return this.numberOfRows;
-	}
-
-	public int getNumberOfColumns() {
-		return this.numberOfColumns;
-	}
-
-	public void map(Function<Object, Object> function) throws InterruptedException {
+	public Matrix<T> map(Function<T, T> function) {
 		class DoFunction implements Runnable {
-			private final Matrix thisMatrix;
+			private final Matrix<T> thisMatrix;
 			private final int i;
 			private final int j;
 
-			DoFunction(Matrix thisMatrix, int i, int j) {
+			DoFunction(Matrix<T> thisMatrix, int i, int j) {
 				this.thisMatrix = thisMatrix;
 				this.i = i;
 				this.j = j;
@@ -196,7 +233,7 @@ public class Matrix {
 
 			@Override
 			public void run() {
-				final Object result = function.apply(this.thisMatrix.get(i, j));
+				final T result = function.apply(this.thisMatrix.get(i, j));
 				this.thisMatrix.set(this.i, this.j, result);
 			}
 		}
@@ -210,17 +247,24 @@ public class Matrix {
 		}
 		executorService.shutdown();
 		while (!executorService.isTerminated()) {
-			executorService.awaitTermination(1000L, TimeUnit.MILLISECONDS);
+			try {
+				executorService.awaitTermination(1000L, TimeUnit.MILLISECONDS);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
+		
+		return this;
 	}
 
-	public void filter(Matrix filterMatrix, BiFunction<Object, Object, Object> biFunction) throws InterruptedException {
+	public Matrix<T> filter(Matrix<T> filterMatrix, BiFunction<T, T, T> biFunction) {
 		class DoFilter implements Runnable {
-			private final Matrix thisMatrix;
+			private final Matrix<T> thisMatrix;
 			private final int i;
 			private final int j;
-						
-			public DoFilter(Matrix thisMatrix, int i, int j) {
+
+			public DoFilter(Matrix<T> thisMatrix, int i, int j) {
 				this.thisMatrix = thisMatrix;
 				this.i = i;
 				this.j = j;
@@ -228,11 +272,11 @@ public class Matrix {
 
 			@Override
 			public void run() {
-				final Object result = biFunction.apply(this.thisMatrix.get(i, j), filterMatrix.get(i, j));
+				final T result = biFunction.apply(this.thisMatrix.get(i, j), filterMatrix.get(i, j));
 				this.thisMatrix.set(i, i, result);
 			}
 		}
-		
+
 		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 		for (int i = 0; i < this.numberOfRows; i++) {
 			for (int j = 0; j < this.numberOfColumns; j++) {
@@ -242,10 +286,17 @@ public class Matrix {
 		}
 		executorService.shutdown();
 		while (!executorService.isTerminated()) {
-			executorService.awaitTermination(1000L, TimeUnit.MILLISECONDS);
+			try {
+				executorService.awaitTermination(1000L, TimeUnit.MILLISECONDS);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
+		
+		return this;
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuilder str = new StringBuilder();

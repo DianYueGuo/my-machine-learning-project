@@ -1,8 +1,8 @@
 package matrix;
 
-public interface Calculator {
+public interface Calculator<T> {
 	
-	Object multiply(Object a, Object b) throws NumberMultiplicationException;
-	Object add(Object a, Object b) throws NumberAdditionException;
+	T multiply(T a, T b);
+	T add(T a, T b);
 		
 }
