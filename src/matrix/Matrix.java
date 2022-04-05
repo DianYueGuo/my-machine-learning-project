@@ -8,11 +8,13 @@ import java.util.function.Function;
 
 public class Matrix<T> {
 	
-	private int numberOfRows;
-	private int numberOfColumns;
-	private T values[][];
-	private Calculator<T> calculator;
-
+	public static interface Calculator<T> {
+		
+		T multiply(T a, T b);
+		T add(T a, T b);
+			
+	}
+	
 	public static final Calculator<Double> DOUBLE_CALCULATOR = new Calculator<Double>() {
 
 		@Override
@@ -25,6 +27,11 @@ public class Matrix<T> {
 			return a + b;
 		}
 	};
+	
+	private int numberOfRows;
+	private int numberOfColumns;
+	private T values[][];
+	private Calculator<T> calculator;
 
 	@SuppressWarnings("unchecked")
 	public Matrix(int numberOfRows, int numberOfColumns, Calculator<T> calculator) {

@@ -18,7 +18,8 @@ public class MainTest {
 		FileOutputStream fos = new FileOutputStream("Network.dat");
 		ObjectOutputStream oos = new ObjectOutputStream(fos);
 
-		Network network = new Network(Network.RANDOM_INITIALIZAR, Network.SIGMOID_ACTIVATION_FUNCTION,
+		
+		Network network = new Network(Network.INITIALIZAR.RANDOM, Network.ACTIVATION_FUNCTION.SIGMOID,
 				new int[] { 2, 10, 100, 100, 100, 10, 1 });
 //		System.out.println(network);
 		double startTime = System.currentTimeMillis();
