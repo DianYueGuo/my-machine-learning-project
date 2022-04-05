@@ -1,37 +1,29 @@
-import matrix.Matrix;
-import matrix.MatrixAdditionException;
-import matrix.MatrixMultiplicationException;
-import matrix.NumberAdditionException;
-import matrix.NumberMultiplicationException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
+import neural_network.Network;
 
 public class MainTest {
 
-	public static void main(String args[]) throws MatrixMultiplicationException, NumberMultiplicationException,
-			NumberAdditionException, InterruptedException, MatrixAdditionException {
-
-		Double values[][] = new Double[1000][1000];
-		for (int i = 0; i < 1000; i++) {
-			Double row[] = new Double[1000];
-			for (int j = 0; j < 1000; j++) {
-				row[j] = i + j / 1000.0;
-			}
-			values[i] = row;
-		}
-
-		Matrix<Double> a = new Matrix<>(values, 10, 10, Matrix.DOUBLE_CALCULATOR);
-		System.out.println("a = \n" + a);
-
-		double startTime = System.currentTimeMillis();
-		Matrix<Double> b = a.multiply(a);
-		double endTime = System.currentTimeMillis();
-		System.out.println("b = a^2 = \n" + b);
-		System.out.println("time spent: " + (endTime - startTime) / 1000 + " s");
-
-		startTime = System.currentTimeMillis();
-		Matrix<Double> c = a.add(a);
-		endTime = System.currentTimeMillis();
-		System.out.println("c = a + a = \n" + c);
-		System.out.println("time spent: " + (endTime - startTime) / 1000 + " s");
+	public static void main(String args[]) throws InterruptedException, IOException {
+		
+		FileOutputStream fos = new FileOutputStream("Network.dat");
+		ObjectOutputStream oos = new ObjectOutputStream(fos);
+		
+		Network network = new Network(Network.RANDOM_INITIALIZAR, Network.SIGMOID_ACTIVATION_FUNCTION, new int[] {1, 2, 1});
+		System.out.println(network);
+		
+//		oos.writeObject(network);
+		
+//		FileInputStream fis = new FileInputStream(new File("SerializableObject.dat"));
+//		ObjectInputStream ois = new ObjectInputStream(fis);
+//		
+//		SerializableObject so = (SerializableObject) ois.readObject();
+//		System.out.println(so);
 	}
 
 }

@@ -7,7 +7,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class Matrix<T> {
-
+	
 	private int numberOfRows;
 	private int numberOfColumns;
 	private T values[][];
@@ -35,7 +35,7 @@ public class Matrix<T> {
 	}
 
 	public Matrix(int numberOfRows, int numberOfColumns, BiFunction<Integer, Integer, T> biFunction,
-			Calculator<T> calculator) {
+			Calculator<T> calculator) throws InterruptedException {
 		this(numberOfRows, numberOfColumns, calculator);
 
 		class DoFunction implements Runnable {
@@ -65,16 +65,12 @@ public class Matrix<T> {
 		}
 		executorService.shutdown();
 		while (!executorService.isTerminated()) {
-			try {
-				executorService.awaitTermination(1000L, TimeUnit.MILLISECONDS);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			executorService.awaitTermination(1000L, TimeUnit.MILLISECONDS);
 		}
 	}
 
-	public Matrix(T values[][], int numberOfRows, int numberOfColumns, Calculator<T> calculator) {
+	public Matrix(T values[][], int numberOfRows, int numberOfColumns, Calculator<T> calculator)
+			throws InterruptedException {
 		this(numberOfRows, numberOfColumns, new BiFunction<Integer, Integer, T>() {
 
 			@Override
@@ -95,7 +91,7 @@ public class Matrix<T> {
 		this.values = matrix.values;
 		this.calculator = matrix.calculator;
 	}
-	
+
 	public T get(int rowIndex, int columnIndex) {
 		return this.values[rowIndex][columnIndex];
 	}
@@ -108,7 +104,7 @@ public class Matrix<T> {
 		return this.numberOfColumns;
 	}
 
-	public Matrix<T> multiply(Matrix<T> b) throws MatrixMultiplicationException {
+	public Matrix<T> multiply(Matrix<T> b) throws MatrixMultiplicationException, InterruptedException {
 		final Matrix<T> a = this;
 
 		if (a.getNumberOfColumns() != b.getNumberOfRows())
@@ -154,26 +150,22 @@ public class Matrix<T> {
 		}
 		executorService.shutdown();
 		while (!executorService.isTerminated()) {
-			try {
-				executorService.awaitTermination(1000L, TimeUnit.MILLISECONDS);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			executorService.awaitTermination(1000L, TimeUnit.MILLISECONDS);
 		}
 
 		this.set(matrix);
-		
+
 		return this;
 	}
 
-	public Matrix<T> add(Matrix<T> b) throws MatrixAdditionException {
+	public Matrix<T> add(Matrix<T> b) throws MatrixAdditionException, InterruptedException {
 		final Matrix<T> a = this;
 
 		final int a_numberOfRows = a.getNumberOfRows();
 		final int a_numberOfColumns = a.getNumberOfColumns();
 		final int b_numberOfRows = b.getNumberOfRows();
 		final int b_numberOfColumns = b.getNumberOfColumns();
+
 		if (a_numberOfRows != b_numberOfRows || a_numberOfColumns != b_numberOfColumns) {
 			throw new MatrixAdditionException();
 		}
@@ -206,20 +198,15 @@ public class Matrix<T> {
 		}
 		executorService.shutdown();
 		while (!executorService.isTerminated()) {
-			try {
-				executorService.awaitTermination(1000L, TimeUnit.MILLISECONDS);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			executorService.awaitTermination(1000L, TimeUnit.MILLISECONDS);
 		}
 
 		this.set(matrix);
-		
+
 		return this;
 	}
 
-	public Matrix<T> map(Function<T, T> function) {
+	public Matrix<T> map(Function<T, T> function) throws InterruptedException {
 		class DoFunction implements Runnable {
 			private final Matrix<T> thisMatrix;
 			private final int i;
@@ -247,18 +234,13 @@ public class Matrix<T> {
 		}
 		executorService.shutdown();
 		while (!executorService.isTerminated()) {
-			try {
-				executorService.awaitTermination(1000L, TimeUnit.MILLISECONDS);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			executorService.awaitTermination(1000L, TimeUnit.MILLISECONDS);
 		}
-		
+
 		return this;
 	}
 
-	public Matrix<T> filter(Matrix<T> filterMatrix, BiFunction<T, T, T> biFunction) {
+	public Matrix<T> filter(Matrix<T> filterMatrix, BiFunction<T, T, T> biFunction) throws InterruptedException {
 		class DoFilter implements Runnable {
 			private final Matrix<T> thisMatrix;
 			private final int i;
@@ -286,14 +268,9 @@ public class Matrix<T> {
 		}
 		executorService.shutdown();
 		while (!executorService.isTerminated()) {
-			try {
-				executorService.awaitTermination(1000L, TimeUnit.MILLISECONDS);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			executorService.awaitTermination(1000L, TimeUnit.MILLISECONDS);
 		}
-		
+
 		return this;
 	}
 
