@@ -65,7 +65,7 @@ public class Network {
 
 	};
 
-	public Network(Supplier<Double> initializar, Function<Double, Double> activationFunction, int widths[])
+	public Network(Supplier<Double> initializar, Function<Double, Double> activationFunctions[], int widths[])
 			throws InterruptedException {
 		layers = new Layer[widths.length];
 
@@ -73,7 +73,7 @@ public class Network {
 			if (i == 0) {
 				layers[i] = new InputLayer();
 			} else {
-				layers[i] = new Layer(widths[i], widths[i - 1], activationFunction, initializar);
+				layers[i] = new Layer(widths[i], widths[i - 1], activationFunctions[i], initializar);
 			}
 		}
 	}
@@ -89,6 +89,22 @@ public class Network {
 		return output;
 	}
 
+	public Double getWeight(int layerIndex, int nodeIndex, int inputNodeIndex) {
+		return layers[layerIndex].getWeight(nodeIndex, inputNodeIndex);
+	}
+	
+	public void setWeight(int layerIndex, int nodeIndex, int inputNodeIndex, Double value) {
+		layers[layerIndex].setWeight(nodeIndex, inputNodeIndex, value);
+	}
+	
+	public Double getBias(int layerIndex, int nodeIndex) {
+		return layers[layerIndex].getBias(nodeIndex);
+	}
+	
+	public void setBias(int layerIndex, int nodeIndex, Double value) {
+		layers[layerIndex].setBias(nodeIndex, value);
+	}
+	
 	@Override
 	public String toString() {
 		return "{ layers: " + Arrays.toString(layers) + " }";

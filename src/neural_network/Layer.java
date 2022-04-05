@@ -40,9 +40,25 @@ public class Layer {
 		return weights.multiply(input).add(biases).map(activationFunction);
 	}
 	
+	public Double getWeight(int nodeIndex, int inputNodeIndex) {
+		return weights.get(nodeIndex, inputNodeIndex);
+	}
+	
+	public void setWeight(int nodeIndex, int inputNodeIndex, Double value) {
+		weights.set(nodeIndex, inputNodeIndex, value);
+	}
+	
 	@Override
-	public String toString() {
+ 	public String toString() {
 		return "{ weights: " + weights + ", biases: " + biases + ", activationFunction: " + activationFunction + " }";
+	}
+
+	public Double getBias(int nodeIndex) {
+		return biases.get(nodeIndex, 0);
+	}
+
+	public void setBias(int nodeIndex, Double value) {
+		biases.set(nodeIndex, 0, value);
 	}
 
 }

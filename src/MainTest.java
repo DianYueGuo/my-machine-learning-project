@@ -27,7 +27,7 @@ public class MainTest {
 		double endTime = System.currentTimeMillis();
 		System.out.println("time spent: " + (endTime - startTime) / 1000 + "");
 
-//		oos.writeObject(network);
+		oos.writeObject(network);
 
 //		FileInputStream fis = new FileInputStream(new File("SerializableObject.dat"));
 //		ObjectInputStream ois = new ObjectInputStream(fis);
