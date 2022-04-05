@@ -16,7 +16,7 @@ public class Network {
 
 		@Override
 		public Double get() {
-			return Math.random();
+			return Math.random() - 0.5;
 		}
 
 	};
@@ -31,7 +31,7 @@ public class Network {
 				return 1.0;
 			}
 		}
-		
+
 		@Override
 		public String toString() {
 			return "BINARY_STEP_ACTIVATION_FUNCTION";
@@ -44,7 +44,7 @@ public class Network {
 		public Double apply(Double t) {
 			return 1 / (1 + Math.exp(-t));
 		}
-		
+
 		@Override
 		public String toString() {
 			return "SIGMOID_ACTIVATION_FUNCTION";
@@ -62,7 +62,7 @@ public class Network {
 		public String toString() {
 			return "LINEAR_ACTIVATION_FUNCTION";
 		}
-		
+
 	};
 
 	public Network(Supplier<Double> initializar, Function<Double, Double> activationFunction, int widths[])
@@ -80,15 +80,15 @@ public class Network {
 
 	public Matrix<Double> getOutput(Matrix<Double> input)
 			throws InterruptedException, MatrixAdditionException, MatrixMultiplicationException {
-		Matrix<Double> output = null;
+		Matrix<Double> output = input;
 
-		for (int i = 0; i < layers.length; i++) {
-			output = layers[i].getOutput(input);
+		for (int i = 1; i < layers.length; i++) {
+			output = layers[i].getOutput(output);
 		}
 
 		return output;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "{ layers: " + Arrays.toString(layers) + " }";
