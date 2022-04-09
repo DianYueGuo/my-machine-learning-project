@@ -13,6 +13,7 @@ public class MainTest {
 
 		while (game.getGameState() == TicTacToeGame.GAME_STATE.PLAYER1_TURN
 				|| game.getGameState() == TicTacToeGame.GAME_STATE.PLAYER2_TURN) {
+			
 			System.out.println(game.getGameState());
 			
 			final int i = scanner.nextInt();

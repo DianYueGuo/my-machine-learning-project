@@ -9,14 +9,14 @@ public class TicTacToeGame {
 	}
 
 	private static enum SPACE_STATE {
-		EMPITY, MARKED_X, MARKED_O
+		EMPTY, MARKED_X, MARKED_O
 	}
 
 	private final Matrix<SPACE_STATE> board;
 	private GAME_STATE gameState;
 
 	public TicTacToeGame() throws InterruptedException {
-		this.board = new Matrix<SPACE_STATE>(3, 3, ((a, b) -> SPACE_STATE.EMPITY), null);
+		this.board = new Matrix<SPACE_STATE>(3, 3, ((a, b) -> SPACE_STATE.EMPTY), null);
 		this.gameState = GAME_STATE.PLAYER1_TURN;
 	}
 
@@ -29,7 +29,7 @@ public class TicTacToeGame {
 			return;
 		}
 
-		if (board.get(i, j) != SPACE_STATE.EMPITY) { // 如果畫到以畫過的格子則輸
+		if (board.get(i, j) != SPACE_STATE.EMPTY) { // 如果畫到以畫過的格子則輸
 			if (gameState == GAME_STATE.PLAYER1_TURN) {
 				gameState = GAME_STATE.PLAYER2_WIN;
 			} else if (gameState == GAME_STATE.PLAYER2_TURN) {
@@ -48,35 +48,35 @@ public class TicTacToeGame {
 		// 判斷畫記結果
 		boolean isLined = false;
 
-		if (board.get(0, 0) != SPACE_STATE.EMPITY && board.get(0, 0) == board.get(0, 1)
+		if (board.get(0, 0) != SPACE_STATE.EMPTY && board.get(0, 0) == board.get(0, 1)
 				&& board.get(0, 1) == board.get(0, 2)) {
 			isLined = true;
 		}
-		if (board.get(1, 0) != SPACE_STATE.EMPITY && board.get(1, 0) == board.get(1, 1)
+		if (board.get(1, 0) != SPACE_STATE.EMPTY && board.get(1, 0) == board.get(1, 1)
 				&& board.get(1, 1) == board.get(1, 2)) {
 			isLined = true;
 		}
-		if (board.get(2, 0) != SPACE_STATE.EMPITY && board.get(2, 0) == board.get(2, 1)
+		if (board.get(2, 0) != SPACE_STATE.EMPTY && board.get(2, 0) == board.get(2, 1)
 				&& board.get(2, 1) == board.get(2, 2)) {
 			isLined = true;
 		}
-		if (board.get(0, 0) != SPACE_STATE.EMPITY && board.get(0, 0) == board.get(1, 0)
+		if (board.get(0, 0) != SPACE_STATE.EMPTY && board.get(0, 0) == board.get(1, 0)
 				&& board.get(1, 0) == board.get(2, 0)) {
 			isLined = true;
 		}
-		if (board.get(0, 1) != SPACE_STATE.EMPITY && board.get(0, 1) == board.get(1, 1)
+		if (board.get(0, 1) != SPACE_STATE.EMPTY && board.get(0, 1) == board.get(1, 1)
 				&& board.get(1, 1) == board.get(2, 1)) {
 			isLined = true;
 		}
-		if (board.get(0, 2) != SPACE_STATE.EMPITY && board.get(0, 2) == board.get(1, 2)
+		if (board.get(0, 2) != SPACE_STATE.EMPTY && board.get(0, 2) == board.get(1, 2)
 				&& board.get(1, 2) == board.get(2, 2)) {
 			isLined = true;
 		}
-		if (board.get(0, 0) != SPACE_STATE.EMPITY && board.get(0, 0) == board.get(1, 1)
+		if (board.get(0, 0) != SPACE_STATE.EMPTY && board.get(0, 0) == board.get(1, 1)
 				&& board.get(1, 1) == board.get(2, 2)) {
 			isLined = true;
 		}
-		if (board.get(0, 2) != SPACE_STATE.EMPITY && board.get(0, 2) == board.get(1, 1)
+		if (board.get(0, 2) != SPACE_STATE.EMPTY && board.get(0, 2) == board.get(1, 1)
 				&& board.get(1, 1) == board.get(2, 0)) {
 			isLined = true;
 		}
@@ -89,11 +89,11 @@ public class TicTacToeGame {
 				gameState = GAME_STATE.PLAYER2_WIN;
 			}
 		} else {
-			if (board.get(0, 0) != SPACE_STATE.EMPITY && board.get(0, 1) != SPACE_STATE.EMPITY
-					&& board.get(0, 2) != SPACE_STATE.EMPITY && board.get(1, 0) != SPACE_STATE.EMPITY
-					&& board.get(1, 1) != SPACE_STATE.EMPITY && board.get(1, 2) != SPACE_STATE.EMPITY
-					&& board.get(2, 0) != SPACE_STATE.EMPITY && board.get(2, 1) != SPACE_STATE.EMPITY
-					&& board.get(2, 2) != SPACE_STATE.EMPITY) {
+			if (board.get(0, 0) != SPACE_STATE.EMPTY && board.get(0, 1) != SPACE_STATE.EMPTY
+					&& board.get(0, 2) != SPACE_STATE.EMPTY && board.get(1, 0) != SPACE_STATE.EMPTY
+					&& board.get(1, 1) != SPACE_STATE.EMPTY && board.get(1, 2) != SPACE_STATE.EMPTY
+					&& board.get(2, 0) != SPACE_STATE.EMPTY && board.get(2, 1) != SPACE_STATE.EMPTY
+					&& board.get(2, 2) != SPACE_STATE.EMPTY) {
 
 				gameState = GAME_STATE.DRAW;
 
