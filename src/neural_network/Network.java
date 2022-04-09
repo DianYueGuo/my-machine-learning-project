@@ -145,7 +145,7 @@ public class Network {
 	private static Double getInitialValue(INITIALIZAR initializar) {
 		switch (initializar) {
 		case RANDOM: {
-			return Math.random() - 0.5;
+			return Math.random() * 2 - 1;
 		}
 		default:
 			throw new IllegalArgumentException("Unexpected value: " + initializar);

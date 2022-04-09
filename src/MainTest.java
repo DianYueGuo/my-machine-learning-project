@@ -1,40 +1,27 @@
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.util.Scanner;
 
-import matrix.Matrix;
+import game.TicTacToeGame;
 import matrix.MatrixAdditionException;
 import matrix.MatrixMultiplicationException;
-import neural_network.Network;
 
 public class MainTest {
 
 	public static void main(String args[])
-			throws InterruptedException, IOException, MatrixAdditionException, MatrixMultiplicationException {
+			throws InterruptedException, MatrixAdditionException, MatrixMultiplicationException {
+		TicTacToeGame game = new TicTacToeGame();
+		Scanner scanner = new Scanner(System.in);
 
-		FileOutputStream fos = new FileOutputStream("Network.dat");
-		ObjectOutputStream oos = new ObjectOutputStream(fos);
-
+		while (game.getGameState() == TicTacToeGame.GAME_STATE.PLAYER1_TURN
+				|| game.getGameState() == TicTacToeGame.GAME_STATE.PLAYER2_TURN) {
+			System.out.println(game.getGameState());
+			
+			final int i = scanner.nextInt();
+			final int j = scanner.nextInt();
+			
+			game.mark(i, j);
+		}
 		
-		Network network = new Network(Network.INITIALIZAR.RANDOM, Network.ACTIVATION_FUNCTION.SIGMOID,
-				new int[] { 2, 10, 100, 100, 100, 10, 1 });
-//		System.out.println(network);
-		double startTime = System.currentTimeMillis();
-		System.out.println(network
-				.getOutput(new Matrix<Double>(new Double[][] { { -1.0 }, { 1.0 } }, 2, 1, Matrix.DOUBLE_CALCULATOR)));
-		double endTime = System.currentTimeMillis();
-		System.out.println("time spent: " + (endTime - startTime) / 1000 + "");
-
-		oos.writeObject(network);
-
-//		FileInputStream fis = new FileInputStream(new File("SerializableObject.dat"));
-//		ObjectInputStream ois = new ObjectInputStream(fis);
-//		
-//		SerializableObject so = (SerializableObject) ois.readObject();
-//		System.out.println(so);
+		System.out.println(game.getGameState());
 	}
 
 }
