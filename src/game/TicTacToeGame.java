@@ -4,106 +4,106 @@ import matrix.Matrix;
 
 public class TicTacToeGame {
 
-	public static enum GAME_STATE {
+	public static enum GameState {
 		PLAYER1_TURN, PLAYER2_TURN, PLAYER1_WIN, PLAYER2_WIN, DRAW
 	}
 
-	private static enum SPACE_STATE {
+	private static enum SpaceState {
 		EMPTY, MARKED_X, MARKED_O
 	}
 
-	private final Matrix<SPACE_STATE> board;
-	private GAME_STATE gameState;
+	private final Matrix<SpaceState> board;
+	private GameState gameState;
 
 	public TicTacToeGame() throws InterruptedException {
-		this.board = new Matrix<SPACE_STATE>(3, 3, ((a, b) -> SPACE_STATE.EMPTY), null);
-		this.gameState = GAME_STATE.PLAYER1_TURN;
+		this.board = new Matrix<SpaceState>(3, 3, ((a, b) -> SpaceState.EMPTY), null);
+		this.gameState = GameState.PLAYER1_TURN;
 	}
 
-	public GAME_STATE getGameState() {
+	public GameState getGameState() {
 		return gameState;
 	}
 
 	public void mark(int i, int j) {
-		if (gameState != GAME_STATE.PLAYER1_TURN && gameState != GAME_STATE.PLAYER2_TURN) { // 檢查遊戲是否已結束，若已結束則跳出
+		if (gameState != GameState.PLAYER1_TURN && gameState != GameState.PLAYER2_TURN) { // 檢查遊戲是否已結束，若已結束則跳出
 			return;
 		}
 
-		if (board.get(i, j) != SPACE_STATE.EMPTY) { // 如果畫到以畫過的格子則輸
-			if (gameState == GAME_STATE.PLAYER1_TURN) {
-				gameState = GAME_STATE.PLAYER2_WIN;
-			} else if (gameState == GAME_STATE.PLAYER2_TURN) {
-				gameState = GAME_STATE.PLAYER1_WIN;
+		if (board.get(i, j) != SpaceState.EMPTY) { // 如果畫到以畫過的格子則輸
+			if (gameState == GameState.PLAYER1_TURN) {
+				gameState = GameState.PLAYER2_WIN;
+			} else if (gameState == GameState.PLAYER2_TURN) {
+				gameState = GameState.PLAYER1_WIN;
 			}
 
 			return;
 		}
 
-		if (gameState == GAME_STATE.PLAYER1_TURN) { // 畫記
-			board.set(i, j, SPACE_STATE.MARKED_X);
-		} else if (gameState == GAME_STATE.PLAYER2_TURN) {
-			board.set(i, j, SPACE_STATE.MARKED_O);
+		if (gameState == GameState.PLAYER1_TURN) { // 畫記
+			board.set(i, j, SpaceState.MARKED_X);
+		} else if (gameState == GameState.PLAYER2_TURN) {
+			board.set(i, j, SpaceState.MARKED_O);
 		}
 
 		// 判斷畫記結果
 		boolean isLined = false;
 
-		if (board.get(0, 0) != SPACE_STATE.EMPTY && board.get(0, 0) == board.get(0, 1)
+		if (board.get(0, 0) != SpaceState.EMPTY && board.get(0, 0) == board.get(0, 1)
 				&& board.get(0, 1) == board.get(0, 2)) {
 			isLined = true;
 		}
-		if (board.get(1, 0) != SPACE_STATE.EMPTY && board.get(1, 0) == board.get(1, 1)
+		if (board.get(1, 0) != SpaceState.EMPTY && board.get(1, 0) == board.get(1, 1)
 				&& board.get(1, 1) == board.get(1, 2)) {
 			isLined = true;
 		}
-		if (board.get(2, 0) != SPACE_STATE.EMPTY && board.get(2, 0) == board.get(2, 1)
+		if (board.get(2, 0) != SpaceState.EMPTY && board.get(2, 0) == board.get(2, 1)
 				&& board.get(2, 1) == board.get(2, 2)) {
 			isLined = true;
 		}
-		if (board.get(0, 0) != SPACE_STATE.EMPTY && board.get(0, 0) == board.get(1, 0)
+		if (board.get(0, 0) != SpaceState.EMPTY && board.get(0, 0) == board.get(1, 0)
 				&& board.get(1, 0) == board.get(2, 0)) {
 			isLined = true;
 		}
-		if (board.get(0, 1) != SPACE_STATE.EMPTY && board.get(0, 1) == board.get(1, 1)
+		if (board.get(0, 1) != SpaceState.EMPTY && board.get(0, 1) == board.get(1, 1)
 				&& board.get(1, 1) == board.get(2, 1)) {
 			isLined = true;
 		}
-		if (board.get(0, 2) != SPACE_STATE.EMPTY && board.get(0, 2) == board.get(1, 2)
+		if (board.get(0, 2) != SpaceState.EMPTY && board.get(0, 2) == board.get(1, 2)
 				&& board.get(1, 2) == board.get(2, 2)) {
 			isLined = true;
 		}
-		if (board.get(0, 0) != SPACE_STATE.EMPTY && board.get(0, 0) == board.get(1, 1)
+		if (board.get(0, 0) != SpaceState.EMPTY && board.get(0, 0) == board.get(1, 1)
 				&& board.get(1, 1) == board.get(2, 2)) {
 			isLined = true;
 		}
-		if (board.get(0, 2) != SPACE_STATE.EMPTY && board.get(0, 2) == board.get(1, 1)
+		if (board.get(0, 2) != SpaceState.EMPTY && board.get(0, 2) == board.get(1, 1)
 				&& board.get(1, 1) == board.get(2, 0)) {
 			isLined = true;
 		}
 
 		if (isLined) {
 			// 如果有形成一條線就贏
-			if (gameState == GAME_STATE.PLAYER1_TURN) {
-				gameState = GAME_STATE.PLAYER1_WIN;
-			} else if (gameState == GAME_STATE.PLAYER2_TURN) {
-				gameState = GAME_STATE.PLAYER2_WIN;
+			if (gameState == GameState.PLAYER1_TURN) {
+				gameState = GameState.PLAYER1_WIN;
+			} else if (gameState == GameState.PLAYER2_TURN) {
+				gameState = GameState.PLAYER2_WIN;
 			}
 		} else {
-			if (board.get(0, 0) != SPACE_STATE.EMPTY && board.get(0, 1) != SPACE_STATE.EMPTY
-					&& board.get(0, 2) != SPACE_STATE.EMPTY && board.get(1, 0) != SPACE_STATE.EMPTY
-					&& board.get(1, 1) != SPACE_STATE.EMPTY && board.get(1, 2) != SPACE_STATE.EMPTY
-					&& board.get(2, 0) != SPACE_STATE.EMPTY && board.get(2, 1) != SPACE_STATE.EMPTY
-					&& board.get(2, 2) != SPACE_STATE.EMPTY) {
+			if (board.get(0, 0) != SpaceState.EMPTY && board.get(0, 1) != SpaceState.EMPTY
+					&& board.get(0, 2) != SpaceState.EMPTY && board.get(1, 0) != SpaceState.EMPTY
+					&& board.get(1, 1) != SpaceState.EMPTY && board.get(1, 2) != SpaceState.EMPTY
+					&& board.get(2, 0) != SpaceState.EMPTY && board.get(2, 1) != SpaceState.EMPTY
+					&& board.get(2, 2) != SpaceState.EMPTY) {
 
-				gameState = GAME_STATE.DRAW;
+				gameState = GameState.DRAW;
 
 				return;
 			}
 			
-			if (gameState == GAME_STATE.PLAYER1_TURN) {
-				gameState = GAME_STATE.PLAYER2_TURN;
-			} else if (gameState == GAME_STATE.PLAYER2_TURN) {
-				gameState = GAME_STATE.PLAYER1_TURN;
+			if (gameState == GameState.PLAYER1_TURN) {
+				gameState = GameState.PLAYER2_TURN;
+			} else if (gameState == GameState.PLAYER2_TURN) {
+				gameState = GameState.PLAYER1_TURN;
 			}
 		}
 

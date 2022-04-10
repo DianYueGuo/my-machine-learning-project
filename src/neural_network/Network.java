@@ -8,11 +8,11 @@ import matrix.MatrixMultiplicationException;
 
 public class Network {
 
-	public static enum ACTIVATION_FUNCTION {
+	public static enum ActivationFunction {
 		BINARY_STEP, SIGMOID, LINEAR
 	}
 
-	public static enum INITIALIZAR {
+	public static enum Initializar {
 		RANDOM
 	}
 
@@ -20,9 +20,9 @@ public class Network {
 
 		private final Matrix<Double> weights;
 		private final Matrix<Double> biases;
-		private final ACTIVATION_FUNCTION activationFunction;
+		private final ActivationFunction activationFunction;
 
-		Layer(int width, int inputWidth, ACTIVATION_FUNCTION activationFunction, INITIALIZAR initializar)
+		Layer(int width, int inputWidth, ActivationFunction activationFunction, Initializar initializar)
 				throws InterruptedException {
 
 			this.weights = new Matrix<Double>(width, inputWidth, ((a, b) -> getInitialValue(initializar)),
@@ -77,7 +77,7 @@ public class Network {
 
 	private final Layer layers[];
 
-	Network(INITIALIZAR initializar, ACTIVATION_FUNCTION activationFunctions[], int widths[])
+	public Network(Initializar initializar, ActivationFunction activationFunctions[], int widths[])
 			throws InterruptedException {
 		layers = new Layer[widths.length];
 
@@ -122,7 +122,7 @@ public class Network {
 		return "{ layers: " + Arrays.toString(layers) + " }";
 	}
 
-	private static Double getActivationValue(Double x, ACTIVATION_FUNCTION activationFunction) {
+	private static Double getActivationValue(Double x, ActivationFunction activationFunction) {
 		switch (activationFunction) {
 		case BINARY_STEP: {
 			if (x < 0) {
@@ -142,7 +142,7 @@ public class Network {
 		}
 	}
 
-	private static Double getInitialValue(INITIALIZAR initializar) {
+	private static Double getInitialValue(Initializar initializar) {
 		switch (initializar) {
 		case RANDOM: {
 			return Math.random() * 2 - 1;
