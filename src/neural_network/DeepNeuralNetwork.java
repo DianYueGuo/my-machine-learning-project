@@ -1,12 +1,13 @@
 package neural_network;
 
 import java.util.Arrays;
+import java.util.function.Function;
 
 import matrix.Matrix;
 import matrix.MatrixAdditionException;
 import matrix.MatrixMultiplicationException;
 
-public class Network {
+public class DeepNeuralNetwork {
 
 	public static enum ActivationFunction {
 		BINARY_STEP, SIGMOID, LINEAR
@@ -36,7 +37,7 @@ public class Network {
 
 		public Matrix<Double> getOutput(Matrix<Double> input)
 				throws InterruptedException, MatrixAdditionException, MatrixMultiplicationException {
-			return weights.multiply(input).add(biases).map((x) -> getActivationValue(x, activationFunction));
+			return weights.clone().multiply(input).add(biases).map((x) -> getActivationValue(x, activationFunction));
 		}
 
 		public Double getWeight(int nodeIndex, int inputNodeIndex) {
@@ -47,12 +48,6 @@ public class Network {
 			weights.set(nodeIndex, inputNodeIndex, value);
 		}
 
-		@Override
-		public String toString() {
-			return "{ weights: " + weights + ", biases: " + biases + ", activationFunction: " + activationFunction
-					+ " }";
-		}
-
 		public Double getBias(int nodeIndex) {
 			return biases.get(nodeIndex, 0);
 		}
@@ -61,35 +56,48 @@ public class Network {
 			biases.set(nodeIndex, 0, value);
 		}
 
-	}
-
-	private static class InputLayer extends Layer {
-
-		InputLayer() throws InterruptedException {
-			super(0, 0, null, null);
+		@Override
+		public String toString() {
+			return "{ weights: " + weights + ", biases: " + biases + ", activationFunction: " + activationFunction
+					+ " }";
 		}
 
-		public Matrix<Double> getOutput(Matrix<Double> input) {
-			return input;
+		public Layer map(Function<Double, Double> function) throws InterruptedException {
+			weights.map(function);
+			biases.map(function);
+
+			return this;
 		}
 
 	}
+
+	protected final Initializar initializar;
+	protected final ActivationFunction activationFunction;
+	protected final ActivationFunction outputLayerActivationFunction;
+	protected final int[] widths;
 
 	private final Layer layers[];
 
-	public Network(Initializar initializar, ActivationFunction activationFunctions[], int widths[])
-			throws InterruptedException {
+	public DeepNeuralNetwork(Initializar initializar, ActivationFunction activationFunction,
+			ActivationFunction outputLayerActivationFunction, int widths[]) throws InterruptedException {
+		this.initializar = initializar;
+		this.activationFunction = activationFunction;
+		this.outputLayerActivationFunction = outputLayerActivationFunction;
+		this.widths = widths;
+
 		layers = new Layer[widths.length];
 
-		for (int i = 0; i < layers.length; i++) {
+		for (int i = 0; i < widths.length; i++) {
 			if (i == 0) {
-				layers[i] = new InputLayer();
+				layers[i] = null;
+			} else if (i < widths.length - 1) {
+				layers[i] = new Layer(widths[i], widths[i - 1], activationFunction, initializar);
 			} else {
-				layers[i] = new Layer(widths[i], widths[i - 1], activationFunctions[i], initializar);
+				layers[i] = new Layer(widths[i], widths[i - 1], outputLayerActivationFunction, initializar);
 			}
 		}
 	}
-	
+
 	public Matrix<Double> getOutput(Matrix<Double> input)
 			throws InterruptedException, MatrixAdditionException, MatrixMultiplicationException {
 		Matrix<Double> output = input;
@@ -117,9 +125,35 @@ public class Network {
 		layers[layerIndex].setBias(nodeIndex, value);
 	}
 
+	public int[] getSize() {
+		return widths;
+	}
+
+	public DeepNeuralNetwork map(Function<Double, Double> function) throws InterruptedException {
+		for (int i = 0; i < widths.length; i++) {
+			if (i > 0 && i < widths.length - 1) {
+				layers[i].map(function);
+			}
+		}
+
+		return this;
+	}
+
 	@Override
 	public String toString() {
 		return "{ layers: " + Arrays.toString(layers) + " }";
+	}
+
+	@Override
+	public DeepNeuralNetwork clone() {
+		DeepNeuralNetwork returnValue = null;
+		try {
+			returnValue = new DeepNeuralNetwork(initializar, activationFunction, outputLayerActivationFunction, widths);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return returnValue;
 	}
 
 	private static Double getActivationValue(Double x, ActivationFunction activationFunction) {

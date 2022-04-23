@@ -1,6 +1,8 @@
-package game;
+package game.tic_tac_toe_game;
 
 import matrix.Matrix;
+import matrix.MatrixAdditionException;
+import matrix.MatrixMultiplicationException;
 
 public class TicTacToeGame {
 
@@ -8,7 +10,7 @@ public class TicTacToeGame {
 		PLAYER1_TURN, PLAYER2_TURN, PLAYER1_WIN, PLAYER2_WIN, DRAW
 	}
 
-	private static enum SpaceState {
+	static enum SpaceState {
 		EMPTY, MARKED_X, MARKED_O
 	}
 
@@ -19,12 +21,16 @@ public class TicTacToeGame {
 		this.board = new Matrix<SpaceState>(3, 3, ((a, b) -> SpaceState.EMPTY), null);
 		this.gameState = GameState.PLAYER1_TURN;
 	}
-
-	public GameState getGameState() {
-		return gameState;
+	
+	public Matrix<SpaceState> getBoard() {
+		return board.clone();
 	}
 
-	public void mark(int i, int j) {
+	SpaceState getSpaceState(int r, int c) {
+		return board.get(r, c);
+	}
+
+	void mark(int i, int j) {
 		if (gameState != GameState.PLAYER1_TURN && gameState != GameState.PLAYER2_TURN) { // 檢查遊戲是否已結束，若已結束則跳出
 			return;
 		}
@@ -99,14 +105,32 @@ public class TicTacToeGame {
 
 				return;
 			}
-			
+
 			if (gameState == GameState.PLAYER1_TURN) {
 				gameState = GameState.PLAYER2_TURN;
 			} else if (gameState == GameState.PLAYER2_TURN) {
 				gameState = GameState.PLAYER1_TURN;
 			}
 		}
+	}
 
-		System.out.println(board);
+	public GameState match(TicTacToePlayer player1, TicTacToePlayer player2)
+			throws InterruptedException, MatrixAdditionException, MatrixMultiplicationException {
+		while (true) {
+			switch (getGameState()) {
+			case PLAYER1_TURN:
+				player1.play(this);
+				break;
+			case PLAYER2_TURN:
+				player2.play(this);
+				break;
+			default:
+				return getGameState();
+			}
+		}
+	}
+
+	private GameState getGameState() {
+		return gameState;
 	}
 }

@@ -7,14 +7,15 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class Matrix<T> {
-	
+
 	public static interface Calculator<T> {
-		
+
 		T multiply(T a, T b);
+
 		T add(T a, T b);
-			
+
 	}
-	
+
 	public static final Calculator<Double> DOUBLE_CALCULATOR = new Calculator<Double>() {
 
 		@Override
@@ -27,7 +28,7 @@ public class Matrix<T> {
 			return a + b;
 		}
 	};
-	
+
 	private int numberOfRows;
 	private int numberOfColumns;
 	private T values[][];
@@ -41,25 +42,23 @@ public class Matrix<T> {
 		this.calculator = calculator;
 	}
 
-	public Matrix(int numberOfRows, int numberOfColumns, BiFunction<Integer, Integer, T> biFunction,
+	public Matrix(int numberOfRows, int numberOfColumns, BiFunction<Integer, Integer, T> initializationFunction,
 			Calculator<T> calculator) throws InterruptedException {
 		this(numberOfRows, numberOfColumns, calculator);
 
 		class DoFunction implements Runnable {
-			private final Matrix<T> thisMatrix;
 			private final int i;
 			private final int j;
 
 			DoFunction(Matrix<T> thisMatrix, int i, int j) {
-				this.thisMatrix = thisMatrix;
 				this.i = i;
 				this.j = j;
 			}
 
 			@Override
 			public void run() {
-				final T result = biFunction.apply(i, j);
-				this.thisMatrix.set(this.i, this.j, result);
+				final T result = initializationFunction.apply(i, j);
+				Matrix.this.set(this.i, this.j, result);
 			}
 		}
 
@@ -114,8 +113,11 @@ public class Matrix<T> {
 	public Matrix<T> multiply(Matrix<T> b) throws MatrixMultiplicationException, InterruptedException {
 		final Matrix<T> a = this;
 
-		if (a.getNumberOfColumns() != b.getNumberOfRows())
+		if (a.getNumberOfColumns() != b.getNumberOfRows()) {
+			System.out.println(a);
+			System.out.println(b);
 			throw new MatrixMultiplicationException();
+		}
 
 		final int length = a.getNumberOfColumns();
 		final int numberOfRows = a.getNumberOfRows();
@@ -215,27 +217,25 @@ public class Matrix<T> {
 
 	public Matrix<T> map(Function<T, T> function) throws InterruptedException {
 		class DoFunction implements Runnable {
-			private final Matrix<T> thisMatrix;
 			private final int i;
 			private final int j;
 
-			DoFunction(Matrix<T> thisMatrix, int i, int j) {
-				this.thisMatrix = thisMatrix;
+			DoFunction(int i, int j) {
 				this.i = i;
 				this.j = j;
 			}
 
 			@Override
 			public void run() {
-				final T result = function.apply(this.thisMatrix.get(i, j));
-				this.thisMatrix.set(this.i, this.j, result);
+				final T result = function.apply(Matrix.this.get(i, j));
+				Matrix.this.set(this.i, this.j, result);
 			}
 		}
 
 		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 		for (int i = 0; i < this.numberOfRows; i++) {
 			for (int j = 0; j < this.numberOfColumns; j++) {
-				DoFunction dofunction = new DoFunction(this, i, j);
+				DoFunction dofunction = new DoFunction(i, j);
 				executorService.execute(dofunction);
 			}
 		}
@@ -249,20 +249,18 @@ public class Matrix<T> {
 
 	public Matrix<T> filter(Matrix<T> filterMatrix, BiFunction<T, T, T> biFunction) throws InterruptedException {
 		class DoFilter implements Runnable {
-			private final Matrix<T> thisMatrix;
 			private final int i;
 			private final int j;
 
 			public DoFilter(Matrix<T> thisMatrix, int i, int j) {
-				this.thisMatrix = thisMatrix;
 				this.i = i;
 				this.j = j;
 			}
 
 			@Override
 			public void run() {
-				final T result = biFunction.apply(this.thisMatrix.get(i, j), filterMatrix.get(i, j));
-				this.thisMatrix.set(i, i, result);
+				final T result = biFunction.apply(Matrix.this.get(i, j), filterMatrix.get(i, j));
+				Matrix.this.set(i, i, result);
 			}
 		}
 
@@ -279,6 +277,27 @@ public class Matrix<T> {
 		}
 
 		return this;
+	}
+
+	@Override
+	public Matrix<T> clone() {
+		Matrix<T> newMatrix = null;
+
+		try {
+			newMatrix = new Matrix<T>(numberOfRows, numberOfColumns, new BiFunction<Integer, Integer, T>() {
+
+				@Override
+				public T apply(Integer t, Integer u) {
+					return Matrix.this.get(t, u);
+				}
+
+			}, calculator);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return newMatrix;
 	}
 
 	@Override
