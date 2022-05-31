@@ -5,12 +5,13 @@ import java.util.function.Function;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONString;
 
 import matrix.Matrix;
 import matrix.MatrixAdditionException;
 import matrix.MatrixMultiplicationException;
 
-public class DeepNeuralNetwork {
+public class DeepNeuralNetwork implements JSONString {
 
 	public static enum ActivationFunction {
 		BINARY_STEP, SIGMOID, LINEAR
@@ -20,7 +21,7 @@ public class DeepNeuralNetwork {
 		RANDOM
 	}
 
-	private static class Layer {
+	private static class Layer implements JSONString {
 
 		private final Matrix<Double> weights;
 		private final Matrix<Double> biases;
@@ -61,8 +62,9 @@ public class DeepNeuralNetwork {
 
 		@Override
 		public String toString() {
-			return "{ weights: " + weights + ", biases: " + biases + ", activationFunction: " + activationFunction
-					+ " }";
+//			return "{ weights: " + weights + ", biases: " + biases + ", activationFunction: " + activationFunction
+//					+ " }";
+			return toJSONString();
 		}
 
 		public Layer map(Function<Double, Double> function) throws InterruptedException {
@@ -70,6 +72,17 @@ public class DeepNeuralNetwork {
 			biases.map(function);
 
 			return this;
+		}
+
+		@Override
+		public String toJSONString() {
+			JSONObject obj = new JSONObject();
+			
+			obj.put("weights", this.weights);
+			obj.put("biases", this.biases);
+			obj.put("activationFunction", this.activationFunction);
+			
+			return obj.toString();
 		}
 
 	}
@@ -157,6 +170,19 @@ public class DeepNeuralNetwork {
 			e.printStackTrace();
 		}
 		return returnValue;
+	}
+	
+	@Override
+	public String toJSONString() {
+		JSONObject obj = new JSONObject();
+		
+		obj.put("initializar", this.initializar);
+		obj.put("activationFunction", this.activationFunction);
+		obj.put("outputLayerActivationFunction", this.outputLayerActivationFunction);
+		obj.put("widths", this.widths);
+		obj.put("layers", this.layers);
+		
+		return obj.toString();
 	}
 
 	private static Double getActivationValue(Double x, ActivationFunction activationFunction) {

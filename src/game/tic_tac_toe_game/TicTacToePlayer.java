@@ -14,7 +14,7 @@ public class TicTacToePlayer {
 
 		public Brain() throws InterruptedException {
 			super(DeepNeuralNetwork.Initializar.RANDOM, DeepNeuralNetwork.ActivationFunction.SIGMOID,
-					DeepNeuralNetwork.ActivationFunction.SIGMOID, new int[] { 9, 9, 9, 9 });
+					DeepNeuralNetwork.ActivationFunction.SIGMOID, new int[] { 9, 1, 9 });
 		}
 
 		private Brain(Initializar initializar, ActivationFunction activationFunction,

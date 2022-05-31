@@ -102,9 +102,10 @@ public class LearnToPlayTicTacToe extends EvolutionaryLearning {
 		Brain brain = new TicTacToePlayer.Brain();
 		LearnToPlayTicTacToe learning = new LearnToPlayTicTacToe(0.3, 128, brain);
 
-		for (int i = 1; i <= 500; i++) {
+		for (int i = 1; i <= 1; i++) {
 			learning.update();
 			System.out.println("update " + i);
+			System.out.println(learning.getParent());
 		}
 
 		while (true) {

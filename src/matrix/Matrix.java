@@ -7,8 +7,9 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import org.json.JSONObject;
+import org.json.JSONString;
 
-public class Matrix<T> {
+public class Matrix<T> implements JSONString {
 
 	public static interface Calculator<T> {
 
@@ -325,6 +326,19 @@ public class Matrix<T> {
 		str.append("]");
 
 		return str.toString();
+//		return toJSONString();
 	}
-	
+
+	@Override
+	public String toJSONString() {
+		JSONObject obj = new JSONObject();
+
+		obj.put("numberOfRows", this.numberOfRows);
+		obj.put("numberOfColumns", this.numberOfColumns);
+		obj.put("values", this.values);
+		obj.put("calculator", this.calculator);
+
+		return obj.toString();
+	}
+
 }
