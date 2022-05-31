@@ -6,6 +6,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import org.json.JSONObject;
+
 public class Matrix<T> {
 
 	public static interface Calculator<T> {
@@ -162,9 +164,7 @@ public class Matrix<T> {
 			executorService.awaitTermination(1000L, TimeUnit.MILLISECONDS);
 		}
 
-		this.set(matrix);
-
-		return this;
+		return matrix;
 	}
 
 	public Matrix<T> add(Matrix<T> b) throws MatrixAdditionException, InterruptedException {
@@ -326,5 +326,5 @@ public class Matrix<T> {
 
 		return str.toString();
 	}
-
+	
 }

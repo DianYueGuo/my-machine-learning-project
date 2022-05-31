@@ -21,13 +21,25 @@ public class TicTacToeGame {
 		this.board = new Matrix<SpaceState>(3, 3, ((a, b) -> SpaceState.EMPTY), null);
 		this.gameState = GameState.PLAYER1_TURN;
 	}
-	
+
 	public Matrix<SpaceState> getBoard() {
 		return board.clone();
 	}
 
 	SpaceState getSpaceState(int r, int c) {
 		return board.get(r, c);
+	}
+
+	boolean isLegalToMark(int i, int j) {
+		if (gameState != GameState.PLAYER1_TURN && gameState != GameState.PLAYER2_TURN) { // 檢查遊戲是否已結束，若已結束則跳出
+			return false;
+		}
+
+		if (board.get(i, j) != SpaceState.EMPTY) { // 如果畫到以畫過的格子則輸
+			return false;
+		}
+
+		return true;
 	}
 
 	void mark(int i, int j) {

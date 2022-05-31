@@ -1,5 +1,6 @@
 package game.tic_tac_toe_game;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import matrix.Matrix;
@@ -13,7 +14,7 @@ public class TicTacToePlayer {
 
 		public Brain() throws InterruptedException {
 			super(DeepNeuralNetwork.Initializar.RANDOM, DeepNeuralNetwork.ActivationFunction.SIGMOID,
-					DeepNeuralNetwork.ActivationFunction.LINEAR, new int[] { 9, 16, 16, 16, 1 });
+					DeepNeuralNetwork.ActivationFunction.SIGMOID, new int[] { 9, 9, 9, 9 });
 		}
 
 		private Brain(Initializar initializar, ActivationFunction activationFunction,
@@ -83,15 +84,25 @@ public class TicTacToePlayer {
 
 			Matrix<Double> result = brain.getOutput(inputValue);
 
-			int resultNumber = (int) Math.round(result.get(0, 0));
+			double maxNumber = 0;
+			ArrayList<Integer> maxNumberIndexs = new ArrayList<Integer>();
 
-			if (resultNumber < 0)
-				resultNumber = 0;
-			if (resultNumber > 8)
-				resultNumber = 8;
+			for (int i = 0; i < 9; i++) {
+				if (game.isLegalToMark(i / 3, i % 3)) {
+					if (result.get(i, 0) > maxNumber) {
+						maxNumber = result.get(i, 0);
+						maxNumberIndexs = new ArrayList<Integer>();
+						maxNumberIndexs.add(i);
+					} else if (result.get(i, 0) == maxNumber) {
+						maxNumberIndexs.add(i);
+					}
+				}
+			}
 
-			markIndex_i = resultNumber / 3;
-			markIndex_j = resultNumber % 3;
+			int maxNumberIndex = maxNumberIndexs.get((int) (maxNumberIndexs.size() * Math.random()));
+
+			markIndex_i = maxNumberIndex / 3;
+			markIndex_j = maxNumberIndex % 3;
 		}
 
 		game.mark(markIndex_i, markIndex_j);

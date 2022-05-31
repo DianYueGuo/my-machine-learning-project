@@ -91,6 +91,8 @@ public class LearnToPlayTicTacToe extends EvolutionaryLearning {
 		System.out.println("botPlayer play first: ");
 		System.out.println("result: " + game.match(botPlayer, manPlayer));
 
+		game = new TicTacToeGame();
+
 		System.out.println("manPlayer play first: ");
 		System.out.println("result: " + game.match(manPlayer, botPlayer));
 	}
@@ -98,14 +100,16 @@ public class LearnToPlayTicTacToe extends EvolutionaryLearning {
 	public static void main(String[] args)
 			throws InterruptedException, MatrixAdditionException, MatrixMultiplicationException {
 		Brain brain = new TicTacToePlayer.Brain();
-		LearnToPlayTicTacToe learning = new LearnToPlayTicTacToe(0.5, 8, brain);
+		LearnToPlayTicTacToe learning = new LearnToPlayTicTacToe(0.3, 128, brain);
 
-		for (int i = 1; i <= 2000; i++) {
+		for (int i = 1; i <= 500; i++) {
 			learning.update();
 			System.out.println("update " + i);
 		}
 
-		test(learning.getParent());
+		while (true) {
+			test(learning.getParent());
+		}
 	}
 
 }

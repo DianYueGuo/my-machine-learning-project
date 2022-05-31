@@ -3,6 +3,9 @@ package neural_network;
 import java.util.Arrays;
 import java.util.function.Function;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import matrix.Matrix;
 import matrix.MatrixAdditionException;
 import matrix.MatrixMultiplicationException;
@@ -37,7 +40,7 @@ public class DeepNeuralNetwork {
 
 		public Matrix<Double> getOutput(Matrix<Double> input)
 				throws InterruptedException, MatrixAdditionException, MatrixMultiplicationException {
-			return weights.clone().multiply(input).add(biases).map((x) -> getActivationValue(x, activationFunction));
+			return weights.multiply(input).add(biases).map((x) -> getActivationValue(x, activationFunction));
 		}
 
 		public Double getWeight(int nodeIndex, int inputNodeIndex) {
