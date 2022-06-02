@@ -1,5 +1,10 @@
 package machine_learning;
 
+import java.io.FileWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import org.json.JSONObject;
+
 import game.tic_tac_toe_game.TicTacToeGame;
 import game.tic_tac_toe_game.TicTacToePlayer;
 import game.tic_tac_toe_game.TicTacToePlayer.Brain;
@@ -97,19 +102,70 @@ public class LearnToPlayTicTacToe extends EvolutionaryLearning {
 		System.out.println("result: " + game.match(manPlayer, botPlayer));
 	}
 
-	public static void main(String[] args)
-			throws InterruptedException, MatrixAdditionException, MatrixMultiplicationException {
-		Brain brain = new TicTacToePlayer.Brain();
-		LearnToPlayTicTacToe learning = new LearnToPlayTicTacToe(0.3, 128, brain);
+	public static void main(String[] args) throws Exception {
+		if (args.length == 5 && args[0].equals("train")) {
+			Brain brain;
 
-		for (int i = 1; i <= 1; i++) {
-			learning.update();
-			System.out.println("update " + i);
-			System.out.println(learning.getParent());
-		}
+			String name = args[1];
+			double learningRate = Double.parseDouble(args[2]);
+			int variationWidth = Integer.parseInt(args[3]);
+			int updateTimes = Integer.parseInt(args[4]);
 
-		while (true) {
-			test(learning.getParent());
+			JSONObject obj = new JSONObject(Files.readString(Path.of(name)));
+			brain = new TicTacToePlayer.Brain(obj);
+
+			LearnToPlayTicTacToe learning = new LearnToPlayTicTacToe(learningRate, (int) Math.pow(2, variationWidth),
+					brain);
+
+			for (int i = 1; i <= updateTimes; i++) {
+				learning.update();
+				System.out.println("update " + i);
+
+				String filename;
+				if (name.lastIndexOf('.') != -1) {
+					filename = name.substring(0, name.lastIndexOf('.')) + "." + i + ".json";
+				} else {
+					filename = name + "." + i + ".json";
+				}
+
+				FileWriter fw = new FileWriter(filename);
+				fw.write(learning.getParent().toJSONString());
+				fw.close();
+
+//				System.out.println(learning.getParent());
+			}
+		} else if (args.length == 2 && args[0].equals("test")) {
+			test(new TicTacToePlayer.Brain(new JSONObject(Files.readString(Path.of(args[1])))));
+		} else if (args.length >= 2 && args[0].equals("create")) {
+			int[] hiddenLayerDepths = new int[args.length - 2];
+			
+			for (int i = 0; i < hiddenLayerDepths.length; i++) {
+				hiddenLayerDepths[i] = Integer.valueOf(args[i + 2]);
+			}
+			
+			Brain brain = new TicTacToePlayer.Brain(hiddenLayerDepths);
+			String name = args[1];
+
+			String filename;
+			if (name.lastIndexOf('.') != -1) {
+				filename = name.substring(0, name.lastIndexOf('.')) + ".json";
+			} else {
+				filename = name + ".json";
+			}
+
+			FileWriter fw = new FileWriter(filename);
+			fw.write(brain.toJSONString());
+			fw.close();
+			
+			System.out.println("new Brain \"" + filename + "\" is created!");
+		} else {
+			System.out.println("Syntax error");
+			System.out.println("The syntax should be: ");
+			System.out.println("\"train <name> <learningRate> <variationWidth> <updateTimes>\"");
+			System.out.println("or");
+			System.out.println("\"test <name>\"");
+			System.out.println("or");
+			System.out.println("\"create <name> <d1> <d2> <d3>... ('d' represents the depth of a hidden layer)\"");
 		}
 	}
 

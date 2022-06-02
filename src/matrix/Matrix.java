@@ -51,26 +51,24 @@ public class Matrix<T> implements JSONString {
 
 		class DoFunction implements Runnable {
 			private final int i;
-			private final int j;
 
-			DoFunction(Matrix<T> thisMatrix, int i, int j) {
+			DoFunction(Matrix<T> thisMatrix, int i) {
 				this.i = i;
-				this.j = j;
 			}
 
 			@Override
 			public void run() {
-				final T result = initializationFunction.apply(i, j);
-				Matrix.this.set(this.i, this.j, result);
+				for (int j = 0; j < numberOfColumns; j++) {
+					final T result = initializationFunction.apply(i, j);
+					Matrix.this.set(this.i, j, result);
+				}
 			}
 		}
 
 		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 		for (int i = 0; i < this.numberOfRows; i++) {
-			for (int j = 0; j < this.numberOfColumns; j++) {
-				DoFunction dofunction = new DoFunction(this, i, j);
-				executorService.execute(dofunction);
-			}
+			DoFunction dofunction = new DoFunction(this, i);
+			executorService.execute(dofunction);
 		}
 		executorService.shutdown();
 		while (!executorService.isTerminated()) {
@@ -89,6 +87,26 @@ public class Matrix<T> implements JSONString {
 
 		}, calculator);
 	}
+
+//	@SuppressWarnings("unchecked")
+//	public Matrix(JSONObject jo) throws Exception {
+//		this.numberOfRows = jo.getInt("numberOfRows");
+//		this.numberOfColumns = jo.getInt("numberOfColumns");
+//
+//		this.values = (T[][]) new Object[numberOfRows][numberOfColumns];
+//		for (int i = 0; i < numberOfRows; i++) {
+//			for (int j = 0; j < numberOfColumns; j++) {
+//				values[i][j] = 
+//				// I don't know how to do
+//			}
+//		}
+//
+//		if (jo.getString("calculator").equals("DOUBLE_CALCULATOR")) {
+//			this.calculator = (Calculator<T>) DOUBLE_CALCULATOR;
+//		} else {
+//			throw new Exception();
+//		}
+//	}
 
 	public void set(int rowIndex, int columnIndex, T value) {
 		this.values[rowIndex][columnIndex] = value;
@@ -336,7 +354,10 @@ public class Matrix<T> implements JSONString {
 		obj.put("numberOfRows", this.numberOfRows);
 		obj.put("numberOfColumns", this.numberOfColumns);
 		obj.put("values", this.values);
-		obj.put("calculator", this.calculator);
+
+		if (this.calculator == DOUBLE_CALCULATOR) {
+			obj.put("calculator", "DOUBLE_CALCULATOR");
+		}
 
 		return obj.toString();
 	}

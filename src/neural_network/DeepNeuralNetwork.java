@@ -1,9 +1,10 @@
 package neural_network;
 
 import java.util.Arrays;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONString;
 
@@ -37,6 +38,28 @@ public class DeepNeuralNetwork implements JSONString {
 					Matrix.DOUBLE_CALCULATOR);
 
 			this.activationFunction = activationFunction;
+		}
+
+		Layer(JSONObject obj) throws JSONException, Exception {
+			this.weights = new Matrix<Double>(obj.getJSONObject("weights").getInt("numberOfRows"), obj.getJSONObject("weights").getInt("numberOfColumns"), new BiFunction<Integer, Integer, Double>() {
+
+				@Override
+				public Double apply(Integer t, Integer u) {
+					return obj.getJSONObject("weights").getJSONArray("values").getJSONArray(t).getDouble(u);
+				}
+				
+			}, Matrix.DOUBLE_CALCULATOR);
+			
+			this.biases = new Matrix<Double>(obj.getJSONObject("biases").getInt("numberOfRows"), obj.getJSONObject("biases").getInt("numberOfColumns"), new BiFunction<Integer, Integer, Double>() {
+
+				@Override
+				public Double apply(Integer t, Integer u) {
+					return obj.getJSONObject("biases").getJSONArray("values").getJSONArray(t).getDouble(u);
+				}
+				
+			}, Matrix.DOUBLE_CALCULATOR);
+
+			this.activationFunction = obj.getEnum(ActivationFunction.class, "activationFunction");
 		}
 
 		public Matrix<Double> getOutput(Matrix<Double> input)
@@ -77,11 +100,11 @@ public class DeepNeuralNetwork implements JSONString {
 		@Override
 		public String toJSONString() {
 			JSONObject obj = new JSONObject();
-			
+
 			obj.put("weights", this.weights);
 			obj.put("biases", this.biases);
 			obj.put("activationFunction", this.activationFunction);
-			
+
 			return obj.toString();
 		}
 
@@ -110,6 +133,26 @@ public class DeepNeuralNetwork implements JSONString {
 				layers[i] = new Layer(widths[i], widths[i - 1], activationFunction, initializar);
 			} else {
 				layers[i] = new Layer(widths[i], widths[i - 1], outputLayerActivationFunction, initializar);
+			}
+		}
+	}
+
+	public DeepNeuralNetwork(JSONObject obj) throws Exception {
+		this.initializar = obj.getEnum(Initializar.class, "initializar");
+		this.activationFunction = obj.getEnum(ActivationFunction.class, "activationFunction");
+		this.outputLayerActivationFunction = obj.getEnum(ActivationFunction.class, "outputLayerActivationFunction");
+		
+		this.widths = new int[obj.getJSONArray("widths").length()];
+		for(int i = 0; i < obj.getJSONArray("widths").length(); i++) {
+			this.widths[i] = obj.getJSONArray("widths").getInt(i);
+		}
+
+		this.layers = new Layer[widths.length];
+		for (int i = 0; i < widths.length; i++) {
+			if (i == 0) {
+				layers[i] = null;
+			} else {
+				layers[i] = new Layer(obj.getJSONArray("layers").getJSONObject(i));
 			}
 		}
 	}
@@ -171,17 +214,17 @@ public class DeepNeuralNetwork implements JSONString {
 		}
 		return returnValue;
 	}
-	
+
 	@Override
 	public String toJSONString() {
 		JSONObject obj = new JSONObject();
-		
+
 		obj.put("initializar", this.initializar);
 		obj.put("activationFunction", this.activationFunction);
 		obj.put("outputLayerActivationFunction", this.outputLayerActivationFunction);
 		obj.put("widths", this.widths);
 		obj.put("layers", this.layers);
-		
+
 		return obj.toString();
 	}
 

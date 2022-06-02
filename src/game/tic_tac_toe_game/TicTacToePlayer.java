@@ -2,6 +2,9 @@ package game.tic_tac_toe_game;
 
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.function.Function;
+
+import org.json.JSONObject;
 
 import matrix.Matrix;
 import matrix.MatrixAdditionException;
@@ -14,7 +17,32 @@ public class TicTacToePlayer {
 
 		public Brain() throws InterruptedException {
 			super(DeepNeuralNetwork.Initializar.RANDOM, DeepNeuralNetwork.ActivationFunction.SIGMOID,
-					DeepNeuralNetwork.ActivationFunction.SIGMOID, new int[] { 9, 1, 9 });
+					DeepNeuralNetwork.ActivationFunction.SIGMOID, new int[] { 9, 10, 10, 9 });
+		}
+
+		public Brain(int[] hidden_layer_depths) throws InterruptedException {
+			super(DeepNeuralNetwork.Initializar.RANDOM, DeepNeuralNetwork.ActivationFunction.SIGMOID,
+					DeepNeuralNetwork.ActivationFunction.SIGMOID, (new Function<int[], int[]>() {
+
+						@Override
+						public int[] apply(int[] t) {
+							int[] returnValue = new int[t.length + 2];
+
+							returnValue[0] = 9;
+							returnValue[returnValue.length - 1] = 9;
+
+							for (int i = 0; i < t.length; i++) {
+								returnValue[i + 1] = t[i];
+							}
+
+							return returnValue;
+						}
+
+					}).apply(hidden_layer_depths));
+		}
+
+		public Brain(JSONObject obj) throws Exception {
+			super(obj);
 		}
 
 		private Brain(Initializar initializar, ActivationFunction activationFunction,
