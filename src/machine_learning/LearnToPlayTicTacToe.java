@@ -132,17 +132,17 @@ public class LearnToPlayTicTacToe extends EvolutionaryLearning {
 				fw.write(learning.getParent().toJSONString());
 				fw.close();
 
-//				System.out.println(learning.getParent());
+				System.out.println("the brain is saved as \"" + filename + "\"");
 			}
 		} else if (args.length == 2 && args[0].equals("test")) {
 			test(new TicTacToePlayer.Brain(new JSONObject(Files.readString(Path.of(args[1])))));
 		} else if (args.length >= 2 && args[0].equals("create")) {
 			int[] hiddenLayerDepths = new int[args.length - 2];
-			
+
 			for (int i = 0; i < hiddenLayerDepths.length; i++) {
 				hiddenLayerDepths[i] = Integer.valueOf(args[i + 2]);
 			}
-			
+
 			Brain brain = new TicTacToePlayer.Brain(hiddenLayerDepths);
 			String name = args[1];
 
@@ -156,7 +156,7 @@ public class LearnToPlayTicTacToe extends EvolutionaryLearning {
 			FileWriter fw = new FileWriter(filename);
 			fw.write(brain.toJSONString());
 			fw.close();
-			
+
 			System.out.println("new Brain \"" + filename + "\" is created!");
 		} else {
 			System.out.println("Syntax error");
