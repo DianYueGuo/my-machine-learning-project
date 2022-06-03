@@ -116,7 +116,7 @@ public class TicTacToePlayer {
 			ArrayList<Integer> maxNumberIndexs = new ArrayList<Integer>();
 
 			for (int i = 0; i < 9; i++) {
-				if (game.isLegalToMark(i / 3, i % 3)) {
+//				if (game.isLegalToMark(i / 3, i % 3)) {
 					if (result.get(i, 0) > maxNumber) {
 						maxNumber = result.get(i, 0);
 						maxNumberIndexs = new ArrayList<Integer>();
@@ -124,7 +124,7 @@ public class TicTacToePlayer {
 					} else if (result.get(i, 0) == maxNumber) {
 						maxNumberIndexs.add(i);
 					}
-				}
+//				}
 			}
 
 			int maxNumberIndex = maxNumberIndexs.get((int) (maxNumberIndexs.size() * Math.random()));
