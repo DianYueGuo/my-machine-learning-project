@@ -61,6 +61,12 @@ public class DeepNeuralNetwork implements JSONString {
 
 			this.activationFunction = obj.getEnum(ActivationFunction.class, "activationFunction");
 		}
+		
+		private Layer(Layer layer) {
+			this.weights = layer.weights.clone();
+			this.biases = layer.biases.clone();
+			this.activationFunction = layer.activationFunction;
+		}
 
 		public Matrix<Double> getOutput(Matrix<Double> input)
 				throws InterruptedException, MatrixAdditionException, MatrixMultiplicationException {
@@ -106,6 +112,11 @@ public class DeepNeuralNetwork implements JSONString {
 			obj.put("activationFunction", this.activationFunction);
 
 			return obj.toString();
+		}
+		
+		@Override
+		public Layer clone() {
+			return new Layer(this);
 		}
 
 	}
@@ -156,6 +167,14 @@ public class DeepNeuralNetwork implements JSONString {
 			}
 		}
 	}
+	
+	private DeepNeuralNetwork(DeepNeuralNetwork network) {
+		this.initializar = network.initializar;
+		this.activationFunction = network.activationFunction;
+		this.outputLayerActivationFunction = network.outputLayerActivationFunction;
+		this.widths = network.widths.clone();
+		this.layers = network.layers.clone();
+	}
 
 	public Matrix<Double> getOutput(Matrix<Double> input)
 			throws InterruptedException, MatrixAdditionException, MatrixMultiplicationException {
@@ -205,14 +224,7 @@ public class DeepNeuralNetwork implements JSONString {
 
 	@Override
 	public DeepNeuralNetwork clone() {
-		DeepNeuralNetwork returnValue = null;
-		try {
-			returnValue = new DeepNeuralNetwork(initializar, activationFunction, outputLayerActivationFunction, widths);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return returnValue;
+		return new DeepNeuralNetwork(this);
 	}
 
 	@Override
