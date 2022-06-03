@@ -117,9 +117,17 @@ public class LearnToPlayTicTacToe extends EvolutionaryLearning {
 			LearnToPlayTicTacToe learning = new LearnToPlayTicTacToe(learningRate, (int) Math.pow(2, variationWidth),
 					brain);
 
+			long previousTime = System.currentTimeMillis();
+			long currentTime = previousTime;
 			for (int i = 1; i <= updateTimes; i++) {
 				learning.update();
-				System.out.println("update " + i);
+
+				currentTime = System.currentTimeMillis();
+				System.out.println("update " + i + " (progress: "
+						+ Math.round(((double) i / updateTimes * 100) * 10) / 10.0 + "%, "
+						+ Math.round(((currentTime - previousTime) * (updateTimes - i) / 60000.0) * 10) / 10.0
+						+ " minutes left)");
+				previousTime = currentTime;
 
 				String filename;
 				if (name.lastIndexOf('.') != -1) {
