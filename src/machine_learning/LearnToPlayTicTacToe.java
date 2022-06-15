@@ -45,16 +45,20 @@ public class LearnToPlayTicTacToe extends EvolutionaryLearning {
 	@Override
 	protected DeepNeuralNetwork[] select(DeepNeuralNetwork[] variants)
 			throws InterruptedException, MatrixAdditionException, MatrixMultiplicationException {
+		
+		// shuffle the variants array
+		for (int i = 0; i < variants.length; i++) {
+			int index = (int) Math.floor(Math.random() * (variants.length - i));
+			
+			DeepNeuralNetwork temp = variants[i];
+			variants[i] = variants[i + index];
+			variants[i + index] = temp;
+		}
+
 		for (int i = variants.length; i > 1; i /= 2) {
 			for (int j = 0; j < i / 2; j++) {
 				final int index1 = j;
 				final int index2 = i - 1 - j;
-
-				if (Math.random() < 0.5) {
-					DeepNeuralNetwork temp = variants[index1];
-					variants[index1] = variants[index2];
-					variants[index2] = temp;
-				}
 
 				TicTacToePlayer player1 = new TicTacToePlayer(variants[index1]);
 				TicTacToePlayer player2 = new TicTacToePlayer(variants[index2]);
