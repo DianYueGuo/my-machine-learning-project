@@ -11,13 +11,15 @@ public abstract class EvolutionaryLearning {
 	protected final double mutationRate;
 	protected final Function<Double, Double> mutationFunction;
 	protected int numberOfVariantsToCreate;
+	protected int selectionWidth;
 	protected DeepNeuralNetwork[] parents;
 
-	public EvolutionaryLearning(double mutationRate, int numberOfVariantsToCreate,
+	public EvolutionaryLearning(double mutationRate, int numberOfVariantsToCreate, int selectionWidth,
 			Function<Double, Double> mutationFunction, DeepNeuralNetwork[] parents) {
 		this.mutationRate = mutationRate;
-		this.mutationFunction = mutationFunction;
 		this.numberOfVariantsToCreate = numberOfVariantsToCreate;
+		this.selectionWidth = selectionWidth;
+		this.mutationFunction = mutationFunction;
 		this.parents = parents;
 	}
 
