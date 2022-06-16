@@ -26,11 +26,11 @@ public class TicTacToeGame {
 		return board.clone();
 	}
 
-	SpaceState getSpaceState(int r, int c) {
+	public SpaceState getSpaceState(int r, int c) {
 		return board.get(r, c);
 	}
 
-	boolean isLegalToMark(int i, int j) {
+	public boolean isLegalToMark(int i, int j) {
 		if (gameState != GameState.PLAYER1_TURN && gameState != GameState.PLAYER2_TURN) { // 檢查遊戲是否已結束，若已結束則跳出
 			return false;
 		}
@@ -42,7 +42,7 @@ public class TicTacToeGame {
 		return true;
 	}
 
-	void mark(int i, int j) {
+	public void mark(int i, int j) {
 		if (gameState != GameState.PLAYER1_TURN && gameState != GameState.PLAYER2_TURN) { // 檢查遊戲是否已結束，若已結束則跳出
 			return;
 		}
