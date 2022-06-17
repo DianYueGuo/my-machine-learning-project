@@ -64,7 +64,7 @@ public class TicTacToePlayer {
 		this.brain = brain;
 	}
 
-	void play(TicTacToeGame game) throws InterruptedException, MatrixAdditionException, MatrixMultiplicationException {
+	public void play(TicTacToeGame game) throws InterruptedException, MatrixAdditionException, MatrixMultiplicationException {
 		int markIndex_i = 0, markIndex_j = 0;
 
 		if (brain == null) {
