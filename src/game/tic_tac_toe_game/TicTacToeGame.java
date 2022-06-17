@@ -35,7 +35,7 @@ public class TicTacToeGame {
 			return false;
 		}
 
-		if (board.get(i, j) != SpaceState.EMPTY) { // 如果畫到以畫過的格子則輸
+		if (i < 0 || 2 < i || j < 0 || 2 < j || board.get(i, j) != SpaceState.EMPTY) { // 如果超出範圍或畫到以畫過的格子則輸
 			return false;
 		}
 
@@ -47,7 +47,7 @@ public class TicTacToeGame {
 			return;
 		}
 
-		if (board.get(i, j) != SpaceState.EMPTY) { // 如果畫到以畫過的格子則輸
+		if (i < 0 || 2 < i || j < 0 || 2 < j || board.get(i, j) != SpaceState.EMPTY) { // 如果超出範圍或畫到以畫過的格子則輸
 			if (gameState == GameState.PLAYER1_TURN) {
 				gameState = GameState.PLAYER2_WIN;
 			} else if (gameState == GameState.PLAYER2_TURN) {
