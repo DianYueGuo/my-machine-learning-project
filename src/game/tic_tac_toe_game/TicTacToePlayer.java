@@ -1,8 +1,7 @@
 package game.tic_tac_toe_game;
 
-import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.function.Function;
+import java.util.function.Supplier;
 
 import org.json.JSONObject;
 
@@ -17,23 +16,23 @@ public class TicTacToePlayer {
 
 		public Brain(int[] hidden_layer_depths) throws InterruptedException {
 			super(DeepNeuralNetwork.Initializar.RANDOM, DeepNeuralNetwork.ActivationFunction.SIGMOID,
-					DeepNeuralNetwork.ActivationFunction.SIGMOID, (new Function<int[], int[]>() {
+					DeepNeuralNetwork.ActivationFunction.LINEAR, (new Supplier<int[]>() {
 
 						@Override
-						public int[] apply(int[] t) {
-							int[] returnValue = new int[t.length + 2];
+						public int[] get() {
+							int[] layer_depths = new int[hidden_layer_depths.length + 2];
 
-							returnValue[0] = 9;
-							returnValue[returnValue.length - 1] = 9;
+							layer_depths[0] = 9;
+							layer_depths[layer_depths.length - 1] = 2;
 
-							for (int i = 0; i < t.length; i++) {
-								returnValue[i + 1] = t[i];
+							for (int i = 0; i < hidden_layer_depths.length; i++) {
+								layer_depths[i + 1] = hidden_layer_depths[i];
 							}
 
-							return returnValue;
+							return layer_depths;
 						}
 
-					}).apply(hidden_layer_depths));
+					}).get());
 		}
 
 		public Brain(JSONObject obj) throws Exception {
@@ -107,25 +106,8 @@ public class TicTacToePlayer {
 
 			Matrix<Double> result = brain.getOutput(inputValue);
 
-			double maxNumber = 0;
-			ArrayList<Integer> maxNumberIndexs = new ArrayList<Integer>();
-
-			for (int i = 0; i < 9; i++) {
-//				if (game.isLegalToMark(i / 3, i % 3)) {
-					if (result.get(i, 0) > maxNumber) {
-						maxNumber = result.get(i, 0);
-						maxNumberIndexs = new ArrayList<Integer>();
-						maxNumberIndexs.add(i);
-					} else if (result.get(i, 0) == maxNumber) {
-						maxNumberIndexs.add(i);
-					}
-//				}
-			}
-
-			int maxNumberIndex = maxNumberIndexs.get((int) (maxNumberIndexs.size() * Math.random()));
-
-			markIndex_i = maxNumberIndex / 3;
-			markIndex_j = maxNumberIndex % 3;
+			markIndex_i = (int) Math.floor(result.get(0, 0));
+			markIndex_j = (int) Math.floor(result.get(1, 0));
 		}
 
 		game.mark(markIndex_i, markIndex_j);
