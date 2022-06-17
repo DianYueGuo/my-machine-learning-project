@@ -88,26 +88,6 @@ public class Matrix<T> implements JSONString {
 		}, calculator);
 	}
 
-//	@SuppressWarnings("unchecked")
-//	public Matrix(JSONObject jo) throws Exception {
-//		this.numberOfRows = jo.getInt("numberOfRows");
-//		this.numberOfColumns = jo.getInt("numberOfColumns");
-//
-//		this.values = (T[][]) new Object[numberOfRows][numberOfColumns];
-//		for (int i = 0; i < numberOfRows; i++) {
-//			for (int j = 0; j < numberOfColumns; j++) {
-//				values[i][j] = 
-//				// I don't know how to do
-//			}
-//		}
-//
-//		if (jo.getString("calculator").equals("DOUBLE_CALCULATOR")) {
-//			this.calculator = (Calculator<T>) DOUBLE_CALCULATOR;
-//		} else {
-//			throw new Exception();
-//		}
-//	}
-
 	public void set(int rowIndex, int columnIndex, T value) {
 		this.values[rowIndex][columnIndex] = value;
 	}
