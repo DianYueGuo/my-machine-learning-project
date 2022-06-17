@@ -59,21 +59,15 @@ public class TicTacToePlayer {
 	}
 
 	private DeepNeuralNetwork brain;
-	private boolean isManualInput;
-
-	public TicTacToePlayer(DeepNeuralNetwork brain, boolean isManualInput) {
-		this.brain = brain;
-		this.isManualInput = isManualInput;
-	}
 
 	public TicTacToePlayer(DeepNeuralNetwork brain) {
-		this(brain, false);
+		this.brain = brain;
 	}
 
 	void play(TicTacToeGame game) throws InterruptedException, MatrixAdditionException, MatrixMultiplicationException {
 		int markIndex_i = 0, markIndex_j = 0;
 
-		if (isManualInput) {
+		if (brain == null) {
 			System.out.println(game.getBoard());
 
 			Scanner scanner = new Scanner(System.in);

@@ -100,7 +100,7 @@ public class LearnToPlayTicTacToe extends EvolutionaryLearning {
 		System.out.println("test robot player: ");
 
 		TicTacToePlayer botPlayer = new TicTacToePlayer(brain);
-		TicTacToePlayer manPlayer = new TicTacToePlayer(null, true);
+		TicTacToePlayer manPlayer = new TicTacToePlayer(null);
 
 		TicTacToeGame game = new TicTacToeGame();
 
