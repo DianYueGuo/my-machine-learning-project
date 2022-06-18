@@ -16,10 +16,16 @@ public class TicTacToeGame {
 
 	private final Matrix<SpaceState> board;
 	private GameState gameState;
+	private int numberOfMarks;
 
 	public TicTacToeGame() throws InterruptedException {
 		this.board = new Matrix<SpaceState>(3, 3, ((a, b) -> SpaceState.EMPTY), null);
 		this.gameState = GameState.PLAYER1_TURN;
+		this.numberOfMarks = 0;
+	}
+	
+	public int getNumberOfMarks() {
+		return numberOfMarks;
 	}
 
 	public Matrix<SpaceState> getBoard() {
@@ -129,6 +135,7 @@ public class TicTacToeGame {
 	public GameState match(TicTacToePlayer player1, TicTacToePlayer player2)
 			throws InterruptedException, MatrixAdditionException, MatrixMultiplicationException {
 		while (true) {
+			numberOfMarks++;
 			switch (getGameState()) {
 			case PLAYER1_TURN:
 				player1.play(this);

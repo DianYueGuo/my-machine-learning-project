@@ -16,6 +16,8 @@ import neural_network.DeepNeuralNetwork;
 
 public class LearnToPlayTicTacToe extends EvolutionaryLearning {
 
+	private double fitness;
+
 	public LearnToPlayTicTacToe(double mutationRate, int numberOfVariantsToCreate, int selectionWidth,
 			Brain[] parents) {
 		super(mutationRate, numberOfVariantsToCreate, selectionWidth, a -> {
@@ -24,6 +26,10 @@ public class LearnToPlayTicTacToe extends EvolutionaryLearning {
 			}
 			return a;
 		}, parents);
+	}
+
+	public double getFitness() {
+		return fitness;
 	}
 
 	@Override
@@ -45,6 +51,8 @@ public class LearnToPlayTicTacToe extends EvolutionaryLearning {
 	@Override
 	protected DeepNeuralNetwork[] select(DeepNeuralNetwork[] variants)
 			throws InterruptedException, MatrixAdditionException, MatrixMultiplicationException {
+		int numberOfMatches = 0;
+		int numberOfMarks = 0;
 
 		for (int i = variants.length; i > selectionWidth; i /= 2) {
 			shuffleArray(0, i, variants);
@@ -57,6 +65,8 @@ public class LearnToPlayTicTacToe extends EvolutionaryLearning {
 				TicTacToePlayer player2 = new TicTacToePlayer(variants[index2]);
 
 				TicTacToeGame game = new TicTacToeGame();
+
+				numberOfMatches++;
 
 				switch (game.match(player1, player2)) {
 				case PLAYER1_WIN: {
@@ -75,8 +85,12 @@ public class LearnToPlayTicTacToe extends EvolutionaryLearning {
 				default:
 					throw new IllegalArgumentException("Unexpected value: " + game.match(player1, player2));
 				}
+
+				numberOfMarks += game.getNumberOfMarks();
 			}
 		}
+
+		fitness = (double) numberOfMarks / numberOfMatches;
 
 		return Arrays.copyOfRange(variants, 0, selectionWidth);
 	}
@@ -144,8 +158,8 @@ public class LearnToPlayTicTacToe extends EvolutionaryLearning {
 
 				// print estimated time
 				currentTime = System.currentTimeMillis();
-				System.out.println("update " + i + " (progress: "
-						+ Math.round(((double) i / updateTimes * 100) * 10) / 10.0 + "%, "
+				System.out.println("update " + i + " (fitness: " + Math.round(learning.getFitness() * 1000) / 1000.0
+						+ ", progress: " + Math.round(((double) i / updateTimes * 100) * 10) / 10.0 + "%, "
 						+ Math.round(((currentTime - previousTime) * (updateTimes - i) / 60000.0) * 10) / 10.0
 						+ " minutes left)");
 				previousTime = currentTime;
