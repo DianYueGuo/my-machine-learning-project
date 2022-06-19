@@ -1,6 +1,7 @@
 package machine_learning;
 
 import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -146,11 +147,12 @@ public class LearnToPlayTicTacToe extends EvolutionaryLearning {
 			final int variationWidth = Integer.parseInt(args[args.length - 3]);
 			final int updateTimes = Integer.parseInt(args[args.length - 1]);
 
-			FileWriter fwLog = new FileWriter(name + ".log");
-			fwLog.write("command, name, learningRate, variationWidth, selectionWidth, updateTimes\n");
-			fwLog.write("train, " + name + ", " + learningRate + ", " + variationWidth + ", " + selectionWidth + ", "
-					+ updateTimes + "\n");
-			fwLog.write("update, fitness\n");
+			PrintWriter pwLog = new PrintWriter(name + ".log");
+			pwLog.println("command, name, learningRate, variationWidth, selectionWidth, updateTimes");
+			pwLog.println("train, " + name + ", " + learningRate + ", " + variationWidth + ", " + selectionWidth + ", "
+					+ updateTimes);
+			pwLog.println("update, fitness");
+			pwLog.flush();
 
 			LearnToPlayTicTacToe learning = new LearnToPlayTicTacToe(learningRate, variationWidth, selectionWidth,
 					brains);
@@ -184,7 +186,8 @@ public class LearnToPlayTicTacToe extends EvolutionaryLearning {
 				}
 				
 				// add log message
-				fwLog.write(i + ", " + Math.round(learning.getFitness() * 1000) / 1000.0 + "\n");
+				pwLog.println(i + ", " + Math.round(learning.getFitness() * 1000) / 1000.0);
+				pwLog.flush();
 
 				// print save message
 				System.out.println("the brains are saved as " + Arrays.toString(filenames));
@@ -192,7 +195,7 @@ public class LearnToPlayTicTacToe extends EvolutionaryLearning {
 			}
 			
 			// close log file
-			fwLog.close();
+			pwLog.close();
 
 		} else if (args.length == 2 && args[0].equals("test")) {
 
