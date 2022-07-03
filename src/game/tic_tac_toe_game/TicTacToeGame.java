@@ -49,6 +49,8 @@ public class TicTacToeGame {
 	}
 
 	public void mark(int i, int j) {
+		numberOfMarks++;
+		
 		if (gameState != GameState.PLAYER1_TURN && gameState != GameState.PLAYER2_TURN) { // 檢查遊戲是否已結束，若已結束則跳出
 			return;
 		}
@@ -135,7 +137,6 @@ public class TicTacToeGame {
 	public GameState match(TicTacToePlayer player1, TicTacToePlayer player2)
 			throws InterruptedException, MatrixAdditionException, MatrixMultiplicationException {
 		while (true) {
-			numberOfMarks++;
 			switch (getGameState()) {
 			case PLAYER1_TURN:
 				player1.play(this);
