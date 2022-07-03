@@ -52,7 +52,7 @@ public class Matrix<T> implements JSONString {
 		class DoFunction implements Runnable {
 			private final int i;
 
-			DoFunction(Matrix<T> thisMatrix, int i) {
+			DoFunction(int i) {
 				this.i = i;
 			}
 
@@ -67,7 +67,7 @@ public class Matrix<T> implements JSONString {
 
 		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 		for (int i = 0; i < this.numberOfRows; i++) {
-			DoFunction dofunction = new DoFunction(this, i);
+			DoFunction dofunction = new DoFunction(i);
 			executorService.execute(dofunction);
 		}
 		executorService.shutdown();
