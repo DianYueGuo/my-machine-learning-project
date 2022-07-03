@@ -1,6 +1,5 @@
 package neural_network;
 
-import java.util.Arrays;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -121,6 +120,8 @@ public class DeepNeuralNetwork implements JSONString {
 
 	}
 
+	public String name;
+	
 	protected final Initializar initializar;
 	protected final ActivationFunction activationFunction;
 	protected final ActivationFunction outputLayerActivationFunction;
@@ -129,11 +130,12 @@ public class DeepNeuralNetwork implements JSONString {
 	private final Layer layers[];
 
 	public DeepNeuralNetwork(Initializar initializar, ActivationFunction activationFunction,
-			ActivationFunction outputLayerActivationFunction, int widths[]) throws InterruptedException {
+			ActivationFunction outputLayerActivationFunction, int widths[], String name) throws InterruptedException {
 		this.initializar = initializar;
 		this.activationFunction = activationFunction;
 		this.outputLayerActivationFunction = outputLayerActivationFunction;
 		this.widths = widths;
+		this.name= name;
 
 		layers = new Layer[widths.length];
 
@@ -152,6 +154,7 @@ public class DeepNeuralNetwork implements JSONString {
 		this.initializar = obj.getEnum(Initializar.class, "initializar");
 		this.activationFunction = obj.getEnum(ActivationFunction.class, "activationFunction");
 		this.outputLayerActivationFunction = obj.getEnum(ActivationFunction.class, "outputLayerActivationFunction");
+		this.name = obj.getString("name");
 		
 		this.widths = new int[obj.getJSONArray("widths").length()];
 		for(int i = 0; i < obj.getJSONArray("widths").length(); i++) {
@@ -174,6 +177,15 @@ public class DeepNeuralNetwork implements JSONString {
 		this.outputLayerActivationFunction = network.outputLayerActivationFunction;
 		this.widths = network.widths.clone();
 		this.layers = network.layers.clone();
+		this.name = network.name;
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public Matrix<Double> getOutput(Matrix<Double> input)
@@ -218,11 +230,6 @@ public class DeepNeuralNetwork implements JSONString {
 	}
 
 	@Override
-	public String toString() {
-		return "{ layers: " + Arrays.toString(layers) + " }";
-	}
-
-	@Override
 	public DeepNeuralNetwork clone() {
 		return new DeepNeuralNetwork(this);
 	}
@@ -236,6 +243,7 @@ public class DeepNeuralNetwork implements JSONString {
 		obj.put("outputLayerActivationFunction", this.outputLayerActivationFunction);
 		obj.put("widths", this.widths);
 		obj.put("layers", this.layers);
+		obj.put("name", name);
 
 		return obj.toString();
 	}

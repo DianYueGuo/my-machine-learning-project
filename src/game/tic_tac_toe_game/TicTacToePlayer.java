@@ -14,7 +14,7 @@ public class TicTacToePlayer {
 
 	public static class Brain extends DeepNeuralNetwork {
 
-		public Brain(int[] hidden_layer_depths) throws InterruptedException {
+		public Brain(int[] hidden_layer_depths, String name) throws InterruptedException {
 			super(DeepNeuralNetwork.Initializar.ZERO, DeepNeuralNetwork.ActivationFunction.SIGMOID,
 					DeepNeuralNetwork.ActivationFunction.LINEAR, (new Supplier<int[]>() {
 
@@ -32,7 +32,7 @@ public class TicTacToePlayer {
 							return layer_depths;
 						}
 
-					}).get());
+					}).get(), name);
 		}
 
 		public Brain(JSONObject obj) throws Exception {
@@ -40,15 +40,15 @@ public class TicTacToePlayer {
 		}
 
 		private Brain(Initializar initializar, ActivationFunction activationFunction,
-				ActivationFunction outputLayerActivationFunction, int[] widths) throws InterruptedException {
-			super(initializar, activationFunction, outputLayerActivationFunction, widths);
+				ActivationFunction outputLayerActivationFunction, int[] widths, String name) throws InterruptedException {
+			super(initializar, activationFunction, outputLayerActivationFunction, widths, name);
 		}
 
 		@Override
 		public Brain clone() {
 			Brain returnValue = null;
 			try {
-				returnValue = new Brain(initializar, activationFunction, outputLayerActivationFunction, widths);
+				returnValue = new Brain(initializar, activationFunction, outputLayerActivationFunction, widths, name);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
