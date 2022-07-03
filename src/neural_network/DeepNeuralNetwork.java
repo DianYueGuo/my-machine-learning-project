@@ -19,7 +19,7 @@ public class DeepNeuralNetwork implements JSONString {
 	}
 
 	public static enum Initializar {
-		RANDOM
+		RANDOM, ZERO
 	}
 
 	private static class Layer implements JSONString {
@@ -264,6 +264,9 @@ public class DeepNeuralNetwork implements JSONString {
 		switch (initializar) {
 		case RANDOM: {
 			return Math.random() * 2 - 1;
+		}
+		case ZERO: {
+			return 0.0;
 		}
 		default:
 			throw new IllegalArgumentException("Unexpected value: " + initializar);
