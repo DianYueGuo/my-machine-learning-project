@@ -25,6 +25,7 @@ public class LearnToPlayTicTacToe extends EvolutionaryLearning {
 			if (Math.random() < mutationRate) {
 				return Math.random() * 2 - 1;
 			}
+			
 			return a;
 		}, parents);
 	}
@@ -43,7 +44,7 @@ public class LearnToPlayTicTacToe extends EvolutionaryLearning {
 			} else {
 				final int index = (int) Math.floor(Math.random() * selectionWidth);
 				variants[i] = parents[index].clone().map(mutationFunction);
-				variants[i].setName(variants[i].getName() + "." + (i + 1));
+				variants[i].setName(variants[i].getName() + "." + i);
 			}
 		}
 
@@ -212,7 +213,7 @@ public class LearnToPlayTicTacToe extends EvolutionaryLearning {
 
 			String name = args[1];
 			
-			Brain brain = new TicTacToePlayer.Brain(hiddenLayerDepths, name + "_1");
+			Brain brain = new TicTacToePlayer.Brain(hiddenLayerDepths, name + ".0");
 			
 			String filename = name + ".json";
 

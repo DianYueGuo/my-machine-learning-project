@@ -220,8 +220,8 @@ public class DeepNeuralNetwork implements JSONString {
 	}
 
 	public DeepNeuralNetwork map(Function<Double, Double> function) throws InterruptedException {
-		for (int i = 0; i < widths.length; i++) {
-			if (i > 0 && i < widths.length - 1) {
+		for (int i = 0; i < layers.length; i++) {
+			if (i > 0 && i < layers.length - 1) {
 				layers[i].map(function);
 			}
 		}
