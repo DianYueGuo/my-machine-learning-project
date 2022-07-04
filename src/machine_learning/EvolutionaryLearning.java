@@ -33,14 +33,4 @@ public abstract class EvolutionaryLearning {
 	protected abstract DeepNeuralNetwork[] select(DeepNeuralNetwork[] variants)
 			throws InterruptedException, MatrixAdditionException, MatrixMultiplicationException;
 
-	protected DeepNeuralNetwork[] getParents() {
-		DeepNeuralNetwork[] copiedNetworks = new DeepNeuralNetwork[parents.length];
-
-		for (int i = 0; i < copiedNetworks.length; i++) {
-			copiedNetworks[i] = parents[i].clone();
-		}
-
-		return copiedNetworks;
-	}
-
 }

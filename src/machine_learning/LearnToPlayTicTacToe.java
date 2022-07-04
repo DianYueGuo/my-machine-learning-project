@@ -183,7 +183,7 @@ public class LearnToPlayTicTacToe extends EvolutionaryLearning {
 				// save file
 				for (int j = 0; j < selectionWidth; j++) {
 					FileWriter fw = new FileWriter(filenames[j]);
-					fw.write(learning.getParents()[j].toJSONString());
+					fw.write(learning.parents[j].toJSONString());
 					fw.close();
 				}
 				

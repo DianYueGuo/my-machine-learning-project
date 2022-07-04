@@ -44,18 +44,6 @@ public class TicTacToePlayer {
 			super(initializar, activationFunction, outputLayerActivationFunction, widths, name);
 		}
 
-		@Override
-		public Brain clone() {
-			Brain returnValue = null;
-			try {
-				returnValue = new Brain(initializar, activationFunction, outputLayerActivationFunction, widths, name);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			return returnValue;
-		}
-
 	}
 
 	private DeepNeuralNetwork brain;
