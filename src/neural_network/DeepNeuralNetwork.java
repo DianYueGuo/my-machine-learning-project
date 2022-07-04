@@ -90,8 +90,6 @@ public class DeepNeuralNetwork implements JSONString {
 
 		@Override
 		public String toString() {
-//			return "{ weights: " + weights + ", biases: " + biases + ", activationFunction: " + activationFunction
-//					+ " }";
 			return toJSONString();
 		}
 
@@ -246,6 +244,11 @@ public class DeepNeuralNetwork implements JSONString {
 		obj.put("name", name);
 
 		return obj.toString();
+	}
+	
+	@Override
+	public String toString() {
+		return toJSONString();
 	}
 
 	private static Double getActivationValue(Double x, ActivationFunction activationFunction) {

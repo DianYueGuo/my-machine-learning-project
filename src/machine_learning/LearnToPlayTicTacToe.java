@@ -43,7 +43,8 @@ public class LearnToPlayTicTacToe extends EvolutionaryLearning {
 				variants[i] = parents[i].clone();
 			} else {
 				final int index = (int) Math.floor(Math.random() * selectionWidth);
-				variants[i] = parents[index].clone().map(mutationFunction);
+				variants[i] = parents[index].clone();
+				variants[i].map(mutationFunction);
 				variants[i].setName(variants[i].getName() + "." + i);
 			}
 		}
@@ -69,8 +70,6 @@ public class LearnToPlayTicTacToe extends EvolutionaryLearning {
 
 				TicTacToeGame game = new TicTacToeGame();
 
-				numberOfMatches++;
-
 				switch (game.match(player1, player2)) {
 				case PLAYER1_WIN: {
 					break;
@@ -86,9 +85,10 @@ public class LearnToPlayTicTacToe extends EvolutionaryLearning {
 					break;
 				}
 				default:
-					throw new IllegalArgumentException("Unexpected value: " + game.match(player1, player2));
+					throw new IllegalArgumentException();
 				}
 
+				numberOfMatches++;
 				numberOfMarks += game.getNumberOfMarks();
 			}
 		}
