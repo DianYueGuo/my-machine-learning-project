@@ -16,14 +16,14 @@ public class TicTacToePlayer {
 
 		public Brain(int[] hidden_layer_depths, String name) throws InterruptedException {
 			super(DeepNeuralNetwork.Initializar.ZERO, DeepNeuralNetwork.ActivationFunction.SIGMOID,
-					DeepNeuralNetwork.ActivationFunction.LINEAR, (new Supplier<int[]>() {
+					DeepNeuralNetwork.ActivationFunction.SIGMOID, (new Supplier<int[]>() {
 
 						@Override
 						public int[] get() {
 							int[] layer_depths = new int[hidden_layer_depths.length + 2];
 
-							layer_depths[0] = 9;
-							layer_depths[layer_depths.length - 1] = 2;
+							layer_depths[0] = 11;
+							layer_depths[layer_depths.length - 1] = 1;
 
 							for (int i = 0; i < hidden_layer_depths.length; i++) {
 								layer_depths[i + 1] = hidden_layer_depths[i];
@@ -40,7 +40,8 @@ public class TicTacToePlayer {
 		}
 
 		private Brain(Initializar initializar, ActivationFunction activationFunction,
-				ActivationFunction outputLayerActivationFunction, int[] widths, String name) throws InterruptedException {
+				ActivationFunction outputLayerActivationFunction, int[] widths, String name)
+				throws InterruptedException {
 			super(initializar, activationFunction, outputLayerActivationFunction, widths, name);
 		}
 
@@ -52,7 +53,8 @@ public class TicTacToePlayer {
 		this.brain = brain;
 	}
 
-	public void play(TicTacToeGame game) throws InterruptedException, MatrixAdditionException, MatrixMultiplicationException {
+	public void play(TicTacToeGame game)
+			throws InterruptedException, MatrixAdditionException, MatrixMultiplicationException {
 		int markIndex_i = 0, markIndex_j = 0;
 
 		if (brain == null) {
@@ -63,33 +65,50 @@ public class TicTacToePlayer {
 			markIndex_i = scanner.nextInt();
 			markIndex_j = scanner.nextInt();
 		} else {
-			Matrix<Double> inputValue = new Matrix<Double>(9, 1, Matrix.DOUBLE_CALCULATOR);
-			for (int i = 0; i < 3; i++) {
-				for (int j = 0; j < 3; j++) {
-					double inuptNumber = 0.0;
+			double maxPossibility = 0;
+			markIndex_i = 0;
+			markIndex_j = 0;
+			
+			for (int k = 0; k < 3; k++) {
+				for (int l = 0; l < 3; l++) {
+					
+					Matrix<Double> inputValue = new Matrix<Double>(11, 1, Matrix.DOUBLE_CALCULATOR);
+					
+					for (int i = 0; i < 3; i++) {
+						for (int j = 0; j < 3; j++) {
+							double inuptNumber = 0.0;
 
-					switch (game.getSpaceState(i, j)) {
-					case EMPTY:
-						inuptNumber = 0.0;
-						break;
-					case MARKED_O:
-						inuptNumber = -1.0;
-						break;
-					case MARKED_X:
-						inuptNumber = 1.0;
-						break;
-					default:
-						break;
+							switch (game.getSpaceState(i, j)) {
+							case EMPTY:
+								inuptNumber = 0.0;
+								break;
+							case MARKED_O:
+								inuptNumber = -1.0;
+								break;
+							case MARKED_X:
+								inuptNumber = 1.0;
+								break;
+							default:
+								break;
+							}
+
+							inputValue.set(i * 3 + j, 0, inuptNumber);
+						}
 					}
+					
+					inputValue.set(9, 0, (double) k);
+					inputValue.set(10, 0, (double) l);
 
-					inputValue.set(i * 3 + j, 0, inuptNumber);
+					Matrix<Double> result = brain.getOutput(inputValue);
+					
+					if(result.get(0, 0) > maxPossibility) {
+						maxPossibility = result.get(0, 0);
+						
+						markIndex_i = k;
+						markIndex_j = l;
+					}
 				}
 			}
-
-			Matrix<Double> result = brain.getOutput(inputValue);
-
-			markIndex_i = (int) Math.floor(result.get(0, 0));
-			markIndex_j = (int) Math.floor(result.get(1, 0));
 		}
 
 		game.mark(markIndex_i, markIndex_j);
