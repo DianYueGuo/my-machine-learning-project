@@ -65,7 +65,7 @@ public class TicTacToePlayer {
 			markIndex_i = scanner.nextInt();
 			markIndex_j = scanner.nextInt();
 		} else {
-			double maxPossibility = 0;
+			double maxPossibility = -1;
 			markIndex_i = 0;
 			markIndex_j = 0;
 			
