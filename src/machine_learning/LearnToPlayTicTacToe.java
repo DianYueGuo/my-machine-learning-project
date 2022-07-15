@@ -1,42 +1,20 @@
 package machine_learning;
 
-import java.io.FileWriter;
-import java.io.PrintWriter;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Arrays;
 
 import org.json.JSONObject;
 
 import game.tic_tac_toe_game.TicTacToeGame;
 import game.tic_tac_toe_game.TicTacToePlayer;
-import game.tic_tac_toe_game.TicTacToePlayer.Brain;
 import matrix.MatrixAdditionException;
 import matrix.MatrixMultiplicationException;
 import neural_network.DeepNeuralNetwork;
 
 public class LearnToPlayTicTacToe extends EvolutionaryLearning {
 
-	private double fitness;
-
-	public LearnToPlayTicTacToe(double mutationRate, int numberOfVariantsToCreate, int selectionWidth,
-			Brain[] parents) {
-		super(mutationRate, numberOfVariantsToCreate, selectionWidth, a -> {
-			if (Math.random() < mutationRate) {
-				return Math.random() * 2 - 1;
-			}
-			
-			return a;
-		}, parents);
-	}
-
-	public double getFitness() {
-		return fitness;
-	}
-
 	@Override
 	protected DeepNeuralNetwork[] mutate(DeepNeuralNetwork[] parents) throws InterruptedException {
-		final DeepNeuralNetwork[] variants = new DeepNeuralNetwork[numberOfVariantsToCreate];
+		final DeepNeuralNetwork[] variants = new DeepNeuralNetwork[variationWidth];
 
 		for (int i = 0; i < variants.length; i++) {
 			if (i < selectionWidth) {
@@ -98,22 +76,10 @@ public class LearnToPlayTicTacToe extends EvolutionaryLearning {
 		return Arrays.copyOfRange(variants, 0, selectionWidth);
 	}
 
-	private void shuffleArray(int begin, int end, Object array[]) {
-		for (int i = begin; i < end; i++) {
-			int index = (int) Math.floor(Math.random() * (end - begin - i));
-
-			swap(i, i + index, array);
-		}
-	}
-
-	private void swap(int a, int b, Object array[]) {
-		Object temp = array[a];
-		array[a] = array[b];
-		array[b] = temp;
-	}
-
-	private static void test(Brain brain)
+	@Override
+	protected void test(DeepNeuralNetwork brain)
 			throws InterruptedException, MatrixAdditionException, MatrixMultiplicationException {
+
 		System.out.println("test robot player: ");
 
 		TicTacToePlayer botPlayer = new TicTacToePlayer(brain);
@@ -128,112 +94,52 @@ public class LearnToPlayTicTacToe extends EvolutionaryLearning {
 
 		System.out.println("manPlayer play first: ");
 		System.out.println("result: " + game.match(manPlayer, botPlayer));
+
 	}
 
-	public static void main(String[] args) throws Exception {
+	@Override
+	protected DeepNeuralNetwork getDeepNeuralNetwork(JSONObject brainJO) throws Exception {
+		return new TicTacToePlayer.Brain(brainJO);
+	}
 
-		if (args.length >= 7 && args[0].equals("train")) {
+	@Override
+	protected DeepNeuralNetwork getDeepNeuralNetwork(int[] hidden_layer_depths, String name)
+			throws InterruptedException {
+		return new TicTacToePlayer.Brain(hidden_layer_depths, name);
+	}
 
-			String name = args[1];
-
-			final int selectionWidth = Integer.parseInt(args[args.length - 2]);
-
-			Brain brains[] = new Brain[selectionWidth];
-			for (int i = 0; i < selectionWidth; i++) {
-				JSONObject brainJO = new JSONObject(Files.readString(Path.of(args[2 + i])));
-				Brain brain = new TicTacToePlayer.Brain(brainJO);
-				brains[i] = brain;
+	@Override
+	protected void initialize(double mutationRate, int variationWidth, int selectionWidth,
+			DeepNeuralNetwork[] parents) {
+		this.mutationRate = mutationRate;
+		this.variationWidth = variationWidth;
+		this.selectionWidth = selectionWidth;
+		this.mutationFunction = a -> {
+			if (Math.random() < mutationRate) {
+				return Math.random() * 2 - 1;
 			}
 
-			final double learningRate = Double.parseDouble(args[args.length - 4]);
-			final int variationWidth = Integer.parseInt(args[args.length - 3]);
-			final int updateTimes = Integer.parseInt(args[args.length - 1]);
+			return a;
+		};
+		this.parents = parents;
+	}
 
-			PrintWriter pwLog = new PrintWriter(name + ".log");
-			pwLog.println("command, name, learningRate, variationWidth, selectionWidth, updateTimes");
-			pwLog.println("train, " + name + ", " + learningRate + ", " + variationWidth + ", " + selectionWidth + ", "
-					+ updateTimes);
-			pwLog.println("update, fitness");
-			pwLog.flush();
+	private void shuffleArray(int begin, int end, Object array[]) {
+		for (int i = begin; i < end; i++) {
+			int index = (int) Math.floor(Math.random() * (end - begin - i));
 
-			LearnToPlayTicTacToe learning = new LearnToPlayTicTacToe(learningRate, variationWidth, selectionWidth,
-					brains);
-
-			long previousTime = System.currentTimeMillis();
-			long currentTime = previousTime;
-			for (int i = 1; i <= updateTimes; i++) {
-
-				// update
-				learning.update();
-
-				// print estimated time
-				currentTime = System.currentTimeMillis();
-				System.out.println("update " + i + " (fitness: " + Math.round(learning.getFitness() * 1000) / 1000.0
-						+ ", progress: " + Math.round(((double) i / updateTimes * 100) * 10) / 10.0 + "%, "
-						+ Math.round(((currentTime - previousTime) * (updateTimes - i) / 60000.0) * 10) / 10.0
-						+ " minutes left)");
-				previousTime = currentTime;
-
-				// make filename
-				String filenames[] = new String[selectionWidth];
-				for (int j = 0; j < selectionWidth; j++) {
-					filenames[j] = name + "_" + (j + 1) + "." + i + ".json";
-				}
-
-				// save file
-				for (int j = 0; j < selectionWidth; j++) {
-					FileWriter fw = new FileWriter(filenames[j]);
-					fw.write(learning.parents[j].toJSONString());
-					fw.close();
-				}
-				
-				// add log message
-				pwLog.println(i + ", " + Math.round(learning.getFitness() * 1000) / 1000.0);
-				pwLog.flush();
-
-				// print save message
-				System.out.println("the brains are saved as " + Arrays.toString(filenames));
-
-			}
-			
-			// close log file
-			pwLog.close();
-
-		} else if (args.length == 2 && args[0].equals("test")) {
-
-			test(new TicTacToePlayer.Brain(new JSONObject(Files.readString(Path.of(args[1])))));
-
-		} else if (args.length >= 2 && args[0].equals("create")) {
-
-			int[] hiddenLayerDepths = new int[args.length - 2];
-
-			for (int i = 0; i < hiddenLayerDepths.length; i++) {
-				hiddenLayerDepths[i] = Integer.valueOf(args[i + 2]);
-			}
-
-			String name = args[1];
-			
-			Brain brain = new TicTacToePlayer.Brain(hiddenLayerDepths, name + ".0");
-			
-			String filename = name + ".json";
-
-			FileWriter fw = new FileWriter(filename);
-			fw.write(brain.toJSONString());
-			fw.close();
-
-			System.out.println("new brain \"" + filename + "\" is created!");
-
-		} else {
-			System.out.println("Syntax error");
-			System.out.println("The syntax should be: ");
-			System.out.println(
-					"\"train <name> <brain1> <brain2>...<brainN> <learningRate> <variationWidth> <selectionWidth> <updateTimes>\" (selectionWidth should be equivalent to the number of <brain> and be less than or equal to variationWidth)");
-			System.out.println("or");
-			System.out.println("\"test <name>\"");
-			System.out.println("or");
-			System.out.println("\"create <name> <d1> <d2> <d3>...\" ('d' represents the depth of a hidden layer)");
+			swap(i, i + index, array);
 		}
+	}
 
+	private void swap(int a, int b, Object array[]) {
+		Object temp = array[a];
+		array[a] = array[b];
+		array[b] = temp;
+	}
+
+	public static void main(String args[]) throws Exception {
+		new LearnToPlayTicTacToe().runEvolutionaryLearning(args);
 	}
 
 }
