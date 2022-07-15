@@ -22,7 +22,7 @@ public class TicTacToePlayer {
 						public int[] get() {
 							int[] layer_depths = new int[hidden_layer_depths.length + 2];
 
-							layer_depths[0] = 11;
+							layer_depths[0] = 9;
 							layer_depths[layer_depths.length - 1] = 1;
 
 							for (int i = 0; i < hidden_layer_depths.length; i++) {
@@ -71,14 +71,21 @@ public class TicTacToePlayer {
 			
 			for (int k = 0; k < 3; k++) {
 				for (int l = 0; l < 3; l++) {
+					TicTacToeGame tryGame = null;
 					
-					Matrix<Double> inputValue = new Matrix<Double>(11, 1, Matrix.DOUBLE_CALCULATOR);
+					if(game.isLegalToMark(k, l)) {
+						tryGame = game.tryMark(k, l);
+					} else {
+						continue;
+					}
+					
+					Matrix<Double> inputValue = new Matrix<Double>(9, 1, Matrix.DOUBLE_CALCULATOR);
 					
 					for (int i = 0; i < 3; i++) {
 						for (int j = 0; j < 3; j++) {
 							double inuptNumber = 0.0;
 
-							switch (game.getSpaceState(i, j)) {
+							switch (tryGame.getSpaceState(i, j)) {
 							case EMPTY:
 								inuptNumber = 0.0;
 								break;
@@ -95,9 +102,6 @@ public class TicTacToePlayer {
 							inputValue.set(i * 3 + j, 0, inuptNumber);
 						}
 					}
-					
-					inputValue.set(9, 0, (double) k);
-					inputValue.set(10, 0, (double) l);
 
 					Matrix<Double> result = brain.getOutput(inputValue);
 					
@@ -107,6 +111,7 @@ public class TicTacToePlayer {
 						markIndex_i = k;
 						markIndex_j = l;
 					}
+					
 				}
 			}
 		}

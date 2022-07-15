@@ -24,6 +24,18 @@ public class TicTacToeGame {
 		this.numberOfMarks = 0;
 	}
 	
+	public TicTacToeGame(TicTacToeGame ticTacToeGame) {
+		this.board = ticTacToeGame.board.clone();
+		this.gameState = ticTacToeGame.gameState;
+		this.numberOfMarks = ticTacToeGame.numberOfMarks;
+	}
+	
+	public TicTacToeGame tryMark(int i, int j) {
+		TicTacToeGame game = this.clone();
+		game.mark(i, j);
+		return game;
+	}
+
 	public int getNumberOfMarks() {
 		return numberOfMarks;
 	}
@@ -148,6 +160,14 @@ public class TicTacToeGame {
 				return getGameState();
 			}
 		}
+	}
+	
+	@Override
+	public TicTacToeGame clone() {
+		TicTacToeGame game;
+		game = new TicTacToeGame(this);
+		
+		return game;
 	}
 
 	private GameState getGameState() {
