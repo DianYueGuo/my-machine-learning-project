@@ -1,6 +1,7 @@
 package machine_learning;
 
 import java.util.Arrays;
+import java.util.function.Function;
 
 import org.json.JSONObject;
 
@@ -14,15 +15,15 @@ public class LearnToPlayTicTacToe extends EvolutionaryLearning {
 
 	@Override
 	protected DeepNeuralNetwork[] mutate(DeepNeuralNetwork[] parents) throws InterruptedException {
-		final DeepNeuralNetwork[] variants = new DeepNeuralNetwork[variationWidth];
+		final DeepNeuralNetwork[] variants = new DeepNeuralNetwork[getVariationWidth()];
 
 		for (int i = 0; i < variants.length; i++) {
-			if (i < selectionWidth) {
+			if (i < getSelectionWidth()) {
 				variants[i] = parents[i].clone();
 			} else {
-				final int index = (int) Math.floor(Math.random() * selectionWidth);
+				final int index = (int) Math.floor(Math.random() * getSelectionWidth());
 				variants[i] = parents[index].clone();
-				variants[i].map(mutationFunction);
+				variants[i].map(getMutationFunction());
 				variants[i].setName(variants[i].getName() + "." + i);
 			}
 		}
@@ -36,7 +37,7 @@ public class LearnToPlayTicTacToe extends EvolutionaryLearning {
 		int numberOfMatches = 0;
 		int numberOfMarks = 0;
 
-		for (int i = variants.length; i > selectionWidth; i /= 2) {
+		for (int i = variants.length; i > getSelectionWidth(); i /= 2) {
 			shuffleArray(0, i, variants);
 
 			for (int j = 0; j < i / 2; j++) {
@@ -71,9 +72,9 @@ public class LearnToPlayTicTacToe extends EvolutionaryLearning {
 			}
 		}
 
-		fitness = (double) numberOfMarks / numberOfMatches;
+		setFitness((double) numberOfMarks / numberOfMatches);
 
-		return Arrays.copyOfRange(variants, 0, selectionWidth);
+		return Arrays.copyOfRange(variants, 0, getSelectionWidth());
 	}
 
 	@Override
@@ -107,21 +108,16 @@ public class LearnToPlayTicTacToe extends EvolutionaryLearning {
 			throws InterruptedException {
 		return new TicTacToePlayer.Brain(hidden_layer_depths, name);
 	}
-
+	
 	@Override
-	protected void initialize(double mutationRate, int variationWidth, int selectionWidth,
-			DeepNeuralNetwork[] parents) {
-		this.mutationRate = mutationRate;
-		this.variationWidth = variationWidth;
-		this.selectionWidth = selectionWidth;
-		this.mutationFunction = a -> {
-			if (Math.random() < mutationRate) {
+	protected Function<Double, Double> getMutationFunction() {
+		return a -> {
+			if (Math.random() < getMutationRate()) {
 				return Math.random() * 2 - 1;
 			}
 
 			return a;
 		};
-		this.parents = parents;
 	}
 
 	private void shuffleArray(int begin, int end, Object array[]) {

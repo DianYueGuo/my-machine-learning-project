@@ -15,16 +15,42 @@ import neural_network.DeepNeuralNetwork;
 
 public abstract class EvolutionaryLearning {
 
-	protected double mutationRate;
-	protected Function<Double, Double> mutationFunction;
-	protected int variationWidth;
-	protected int selectionWidth;
-	protected DeepNeuralNetwork[] parents;
-	protected double fitness;
+	private double mutationRate;
+	private int variationWidth;
+	private int selectionWidth;
+	private DeepNeuralNetwork[] parents;
+	private double fitness;
+	
+	protected int getVariationWidth() {
+		return variationWidth;
+	}
 
-	protected void update() throws InterruptedException, MatrixAdditionException, MatrixMultiplicationException {
-		final DeepNeuralNetwork[] variants = mutate(parents);
-		parents = select(variants);
+	protected void setVariationWidth(int variationWidth) {
+		this.variationWidth = variationWidth;
+	}
+
+	protected int getSelectionWidth() {
+		return selectionWidth;
+	}
+
+	protected void setSelectionWidth(int selectionWidth) {
+		this.selectionWidth = selectionWidth;
+	}
+
+	protected double getMutationRate() {
+		return mutationRate;
+	}
+
+	protected void setMutationRate(double mutationRate) {
+		this.mutationRate = mutationRate;
+	}
+
+	protected double getFitness() {
+		return fitness;
+	}
+
+	protected void setFitness(double fitness) {
+		this.fitness = fitness;
 	}
 
 	protected abstract DeepNeuralNetwork[] mutate(DeepNeuralNetwork[] parents) throws InterruptedException;
@@ -35,15 +61,18 @@ public abstract class EvolutionaryLearning {
 	protected abstract void test(DeepNeuralNetwork brain)
 			throws InterruptedException, MatrixAdditionException, MatrixMultiplicationException;
 
-	protected void initialize(double learningRate, int variationWidth, int selectionWidth, DeepNeuralNetwork[] brains) {
-
-	}
-
 	protected abstract DeepNeuralNetwork getDeepNeuralNetwork(JSONObject brainJO) throws Exception;
 
 	protected abstract DeepNeuralNetwork getDeepNeuralNetwork(int[] hidden_layer_depths, String name)
 			throws InterruptedException;
 
+	protected abstract Function<Double, Double> getMutationFunction();
+	
+	private void update() throws InterruptedException, MatrixAdditionException, MatrixMultiplicationException {
+		final DeepNeuralNetwork[] variants = mutate(parents);
+		this.parents = select(variants);
+	}
+	
 	protected final void runEvolutionaryLearning(String args[]) throws Exception {
 
 		if (args.length >= 7 && args[0].equals("train")) {
@@ -70,7 +99,10 @@ public abstract class EvolutionaryLearning {
 			pwLog.println("update, fitness");
 			pwLog.flush();
 
-			initialize(learningRate, variationWidth, selectionWidth, brains);
+			setMutationRate(learningRate);
+			setVariationWidth(variationWidth);
+			setSelectionWidth(selectionWidth);
+			this.parents = brains;
 
 			long previousTime = System.currentTimeMillis();
 			long currentTime = previousTime;
@@ -81,7 +113,7 @@ public abstract class EvolutionaryLearning {
 
 				// print estimated time
 				currentTime = System.currentTimeMillis();
-				System.out.println("update " + i + " (fitness: " + Math.round(fitness * 1000) / 1000.0 + ", progress: "
+				System.out.println("update " + i + " (fitness: " + Math.round(getFitness() * 1000) / 1000.0 + ", progress: "
 						+ Math.round(((double) i / updateTimes * 100) * 10) / 10.0 + "%, "
 						+ Math.round(((currentTime - previousTime) * (updateTimes - i) / 60000.0) * 10) / 10.0
 						+ " minutes left)");
@@ -101,7 +133,7 @@ public abstract class EvolutionaryLearning {
 				}
 
 				// add log message
-				pwLog.println(i + ", " + Math.round(fitness * 1000) / 1000.0);
+				pwLog.println(i + ", " + Math.round(getFitness() * 1000) / 1000.0);
 				pwLog.flush();
 
 				// print save message
