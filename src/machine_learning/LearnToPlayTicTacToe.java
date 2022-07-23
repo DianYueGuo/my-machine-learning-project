@@ -104,9 +104,9 @@ public class LearnToPlayTicTacToe extends EvolutionaryLearning {
 	}
 
 	@Override
-	protected DeepNeuralNetwork getDeepNeuralNetwork(int[] hidden_layer_depths, String name)
+	protected DeepNeuralNetwork getDeepNeuralNetwork(int[] hidden_layer_depths, String name, DeepNeuralNetwork.Initializar initializar)
 			throws InterruptedException {
-		return new TicTacToePlayer.Brain(hidden_layer_depths, name);
+		return new TicTacToePlayer.Brain(hidden_layer_depths, name, initializar);
 	}
 	
 	@Override

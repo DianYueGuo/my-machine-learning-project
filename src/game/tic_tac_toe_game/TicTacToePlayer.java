@@ -14,8 +14,8 @@ public class TicTacToePlayer {
 
 	public static class Brain extends DeepNeuralNetwork {
 
-		public Brain(int[] hidden_layer_depths, String name) throws InterruptedException {
-			super(DeepNeuralNetwork.Initializar.ZERO, DeepNeuralNetwork.ActivationFunction.SIGMOID,
+		public Brain(int[] hidden_layer_depths, String name, Initializar initializar) throws InterruptedException {
+			super(initializar, DeepNeuralNetwork.ActivationFunction.SIGMOID,
 					DeepNeuralNetwork.ActivationFunction.SIGMOID, (new Supplier<int[]>() {
 
 						@Override

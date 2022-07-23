@@ -63,7 +63,7 @@ public abstract class EvolutionaryLearning {
 
 	protected abstract DeepNeuralNetwork getDeepNeuralNetwork(JSONObject brainJO) throws Exception;
 
-	protected abstract DeepNeuralNetwork getDeepNeuralNetwork(int[] hidden_layer_depths, String name)
+	protected abstract DeepNeuralNetwork getDeepNeuralNetwork(int[] hidden_layer_depths, String name, DeepNeuralNetwork.Initializar initializar)
 			throws InterruptedException;
 
 	protected abstract Function<Double, Double> getMutationFunction();
@@ -148,17 +148,17 @@ public abstract class EvolutionaryLearning {
 
 			test(getDeepNeuralNetwork(new JSONObject(Files.readString(Path.of(args[1])))));
 
-		} else if (args.length >= 2 && args[0].equals("create")) {
+		} else if (args.length >= 3 && args[0].equals("create")) {
 
-			int[] hiddenLayerDepths = new int[args.length - 2];
+			int[] hiddenLayerDepths = new int[args.length - 3];
 
 			for (int i = 0; i < hiddenLayerDepths.length; i++) {
-				hiddenLayerDepths[i] = Integer.valueOf(args[i + 2]);
+				hiddenLayerDepths[i] = Integer.valueOf(args[i + 3]);
 			}
 
 			String name = args[1];
 
-			DeepNeuralNetwork brain = getDeepNeuralNetwork(hiddenLayerDepths, name + ".0");
+			DeepNeuralNetwork brain = getDeepNeuralNetwork(hiddenLayerDepths, name + ".0", DeepNeuralNetwork.Initializar.valueOf(args[2]));
 
 			String filename = name + ".json";
 
@@ -176,7 +176,7 @@ public abstract class EvolutionaryLearning {
 			System.out.println("or");
 			System.out.println("\"test <name>\"");
 			System.out.println("or");
-			System.out.println("\"create <name> <d1> <d2> <d3>...\" ('d' represents the depth of a hidden layer)");
+			System.out.println("\"create <name> <initializar> <d1> <d2> <d3>...\" ('d' represents the depth of a hidden layer)");
 		}
 
 	}
