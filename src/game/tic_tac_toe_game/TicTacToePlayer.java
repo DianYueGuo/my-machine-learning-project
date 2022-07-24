@@ -60,6 +60,7 @@ public class TicTacToePlayer {
 		if (brain == null) {
 			System.out.println(game.getBoard());
 
+			@SuppressWarnings("resource")
 			Scanner scanner = new Scanner(System.in);
 
 			markIndex_i = scanner.nextInt();

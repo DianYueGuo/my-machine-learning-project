@@ -8,5 +8,6 @@
 	</classpathentry>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="/Users/Joseph/eclipse-workspace/machine_learning_project/json-20220320.jar"/>
+	<classpathentry kind="lib" path="jfreechart-1.5.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

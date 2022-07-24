@@ -1,7 +1,7 @@
 package machine_learning;
 
 import java.util.Arrays;
-import java.util.function.Function;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.json.JSONObject;
 
@@ -23,7 +23,13 @@ public class LearnToPlayTicTacToe extends EvolutionaryLearning {
 			} else {
 				final int index = (int) Math.floor(Math.random() * getSelectionWidth());
 				variants[i] = parents[index].clone();
-				variants[i].map(getMutationFunction());
+				variants[i].map(a -> {
+					if (ThreadLocalRandom.current().nextDouble() < getMutationRate()) {
+						return ThreadLocalRandom.current().nextDouble() * 2 - 1;
+					}
+
+					return a;
+				});
 				variants[i].setName(variants[i].getName() + "." + i);
 			}
 		}
@@ -104,20 +110,9 @@ public class LearnToPlayTicTacToe extends EvolutionaryLearning {
 	}
 
 	@Override
-	protected DeepNeuralNetwork getDeepNeuralNetwork(int[] hidden_layer_depths, String name, DeepNeuralNetwork.Initializar initializar)
-			throws InterruptedException {
+	protected DeepNeuralNetwork getDeepNeuralNetwork(int[] hidden_layer_depths, String name,
+			DeepNeuralNetwork.Initializar initializar) throws InterruptedException {
 		return new TicTacToePlayer.Brain(hidden_layer_depths, name, initializar);
-	}
-	
-	@Override
-	protected Function<Double, Double> getMutationFunction() {
-		return a -> {
-			if (Math.random() < getMutationRate()) {
-				return Math.random() * 2 - 1;
-			}
-
-			return a;
-		};
 	}
 
 	private void shuffleArray(int begin, int end, Object array[]) {

@@ -1,5 +1,6 @@
 package neural_network;
 
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -274,7 +275,7 @@ public class DeepNeuralNetwork implements JSONString {
 	private static Double getInitialValue(Initializar initializar) {
 		switch (initializar) {
 		case RANDOM: {
-			return Math.random() * 2 - 1;
+			return ThreadLocalRandom.current().nextDouble() * 2 - 1;
 		}
 		case ZERO: {
 			return 0.0;

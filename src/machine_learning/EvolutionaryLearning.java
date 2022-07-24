@@ -5,7 +5,6 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.function.Function;
 
 import org.json.JSONObject;
 
@@ -65,8 +64,6 @@ public abstract class EvolutionaryLearning {
 
 	protected abstract DeepNeuralNetwork getDeepNeuralNetwork(int[] hidden_layer_depths, String name, DeepNeuralNetwork.Initializar initializar)
 			throws InterruptedException;
-
-	protected abstract Function<Double, Double> getMutationFunction();
 	
 	private void update() throws InterruptedException, MatrixAdditionException, MatrixMultiplicationException {
 		final DeepNeuralNetwork[] variants = mutate(parents);
@@ -176,7 +173,7 @@ public abstract class EvolutionaryLearning {
 			System.out.println("or");
 			System.out.println("\"test <name>\"");
 			System.out.println("or");
-			System.out.println("\"create <name> <initializar> <d1> <d2> <d3>...\" ('d' represents the depth of a hidden layer)");
+			System.out.println("\"create <name> <initializar> <d1> <d2> <d3>...\" (\"initializar\" can be RANDOM or ZERO, 'd' represents the depth of a hidden layer)");
 		}
 
 	}
